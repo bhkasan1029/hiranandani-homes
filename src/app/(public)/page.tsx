@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import StackedCards from "@/components/ui/stacked-cards";
 import ListPropertyCTA from "@/components/property/ListPropertyCTA";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 async function getHomeData() {
   const [featured, stats] = await Promise.all([
@@ -172,21 +173,17 @@ export default async function HomePage() {
       ══════════════════════════════════════════════════════════════════ */}
       <section className="py-12 sm:py-16 bg-[#f9f9f9] px-5 sm:px-8">
         <div className="max-w-[1440px] mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {[
-            { value: `${activeListings}+`, label: "Active Listings" },
-            { value: `${completedDeals}+`, label: "Deals Closed" },
-            { value: `${owners}+`,         label: "Verified Owners" },
-            { value: "Always",             label: "Free" },
-          ].map(({ value, label }) => (
-            <div key={label} className="text-center md:text-left">
-              <div className="text-3xl sm:text-4xl font-black text-[#0B0B0C] tracking-tighter mb-1">
-                {value}
-              </div>
-              <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#5a6061]">
-                {label}
-              </div>
+          <AnimatedCounter end={activeListings} suffix="+" label="Active Listings" />
+          <AnimatedCounter end={completedDeals} suffix="+" label="Deals Closed" />
+          <AnimatedCounter end={owners} suffix="+" label="Verified Owners" />
+          <div className="text-center md:text-left">
+            <div className="text-3xl sm:text-4xl font-black text-[#0B0B0C] tracking-tighter mb-1">
+              Always
             </div>
-          ))}
+            <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#5a6061]">
+              Free
+            </div>
+          </div>
         </div>
       </section>
 

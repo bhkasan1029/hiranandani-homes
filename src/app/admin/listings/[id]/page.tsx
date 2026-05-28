@@ -12,6 +12,7 @@ import { CheckCircle2, XCircle, ArrowLeft, Loader2, Trash2 } from "lucide-react"
 import { PROPERTY_TYPE_LABELS, LISTING_TYPE_LABELS, FURNISHED_LABELS } from "@/lib/constants";
 import { formatPrice, formatArea, formatDate } from "@/lib/utils/formatters";
 import { Users } from "lucide-react";
+import Modal from "@/components/ui/Modal";
 
 interface Inquiry {
   id: string;
@@ -62,6 +63,8 @@ export default function AdminListingDetailPage() {
   const [rejectNotes, setRejectNotes] = useState("");
   const [showRejectForm, setShowRejectForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [approveDeleteOpen, setApproveDeleteOpen] = useState(false);
+  const [adminDeleteOpen, setAdminDeleteOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -330,21 +333,7 @@ export default function AdminListingDetailPage() {
           <div className="flex gap-3">
             <Button
               className="bg-red-600 hover:bg-red-700 gap-2"
-              onClick={async () => {
-                if (!window.confirm("Permanently delete this property? This cannot be undone.")) return;
-                setSubmitting(true);
-                try {
-                  const res = await fetch(`/api/admin/properties/${id}/delete`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "APPROVE" }),
-                  });
-                  if (!res.ok) { toast.error("Failed to delete"); return; }
-                  toast.success("Property permanently deleted");
-                  router.push("/admin/listings");
-                } catch { toast.error("Failed to delete"); }
-                finally { setSubmitting(false); }
-              }}
+              onClick={() => setApproveDeleteOpen(true)}
               disabled={submitting}
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
@@ -384,17 +373,7 @@ export default function AdminListingDetailPage() {
             <Button
               variant="outline"
               className="border-red-200 text-red-600 hover:bg-red-50 gap-2 text-xs"
-              onClick={async () => {
-                if (!window.confirm("Permanently delete this property? This cannot be undone.")) return;
-                setSubmitting(true);
-                try {
-                  const res = await fetch(`/api/properties/${id}`, { method: "DELETE" });
-                  if (!res.ok) { toast.error("Failed to delete"); return; }
-                  toast.success("Property deleted");
-                  router.push("/admin/listings");
-                } catch { toast.error("Failed to delete"); }
-                finally { setSubmitting(false); }
-              }}
+              onClick={() => setAdminDeleteOpen(true)}
               disabled={submitting}
             >
               {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
@@ -403,6 +382,54 @@ export default function AdminListingDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Approve & Delete confirmation */}
+      <Modal
+        open={approveDeleteOpen}
+        onClose={() => setApproveDeleteOpen(false)}
+        title="Permanently Delete?"
+        description="This will permanently delete the listing and all associated data. This cannot be undone."
+        confirmLabel="Approve & Delete"
+        onConfirm={async () => {
+          setApproveDeleteOpen(false);
+          setSubmitting(true);
+          try {
+            const res = await fetch(`/api/admin/properties/${id}/delete`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "APPROVE" }),
+            });
+            if (!res.ok) { toast.error("Failed to delete"); return; }
+            toast.success("Property permanently deleted");
+            router.push("/admin/listings");
+          } catch { toast.error("Failed to delete"); }
+          finally { setSubmitting(false); }
+        }}
+        danger
+        loading={submitting}
+      />
+
+      {/* Admin direct delete confirmation */}
+      <Modal
+        open={adminDeleteOpen}
+        onClose={() => setAdminDeleteOpen(false)}
+        title="Delete Property?"
+        description="This will permanently delete the listing. This cannot be undone."
+        confirmLabel="Delete Property"
+        onConfirm={async () => {
+          setAdminDeleteOpen(false);
+          setSubmitting(true);
+          try {
+            const res = await fetch(`/api/properties/${id}`, { method: "DELETE" });
+            if (!res.ok) { toast.error("Failed to delete"); return; }
+            toast.success("Property deleted");
+            router.push("/admin/listings");
+          } catch { toast.error("Failed to delete"); }
+          finally { setSubmitting(false); }
+        }}
+        danger
+        loading={submitting}
+      />
     </div>
   );
 }

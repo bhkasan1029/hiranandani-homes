@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ suggestions: [] });
   }
 
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "Maps API not configured" }, { status: 500 });
   }

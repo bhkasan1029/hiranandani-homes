@@ -17,6 +17,7 @@ import {
 import { formatPrice, formatDate } from "@/lib/utils/formatters";
 import { Building2, PlusCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
+import Modal from "@/components/ui/Modal";
 
 interface PropertyImage {
   url: string;
@@ -88,6 +89,8 @@ export default function DashboardListings({
   const [interestsLoading, setInterestsLoading] = useState(false);
   const [statusLoading, setStatusLoading] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [inactiveConfirmId, setInactiveConfirmId] = useState<string | null>(null);
 
   const counts = {
     ACTIVE: properties.filter((p) => p.status === "ACTIVE").length,
@@ -113,11 +116,6 @@ export default function DashboardListings({
   }
 
   async function requestDelete(propertyId: string) {
-    const confirmed = window.confirm(
-      "Request deletion of this property? An admin will review and confirm before it's permanently removed."
-    );
-    if (!confirmed) return;
-
     setDeleteLoading(propertyId);
     try {
       const res = await fetch(`/api/properties/${propertyId}`, { method: "DELETE" });
@@ -137,13 +135,6 @@ export default function DashboardListings({
   }
 
   async function toggleStatus(propertyId: string, newStatus: "ACTIVE" | "INACTIVE") {
-    if (newStatus === "INACTIVE") {
-      const confirmed = window.confirm(
-        "Are you sure you want to mark this property as rented/sold? All interested seekers will be notified."
-      );
-      if (!confirmed) return;
-    }
-
     setStatusLoading(propertyId);
     try {
       const res = await fetch(`/api/properties/${propertyId}/status`, {
@@ -197,10 +188,10 @@ export default function DashboardListings({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
         {(
           [
-            { key: "ACTIVE", label: "Active", color: "text-green-700 bg-green-50 border-green-200" },
-            { key: "PENDING", label: "Pending", color: "text-yellow-700 bg-yellow-50 border-yellow-200" },
-            { key: "REJECTED", label: "Rejected", color: "text-red-700 bg-red-50 border-red-200" },
-            { key: "INACTIVE", label: "Inactive", color: "text-gray-700 bg-gray-50 border-gray-200" },
+            { key: "ACTIVE", label: "Active", color: "text-[#0B0B0C] bg-[#f9f9f9] border-[#e0e0e0]" },
+            { key: "PENDING", label: "Pending", color: "text-[#2d3435] bg-white border-[#d4d4d4]" },
+            { key: "REJECTED", label: "Rejected", color: "text-[#0B0B0C] bg-[#f0f0f0] border-[#c8c8c8]" },
+            { key: "INACTIVE", label: "Inactive", color: "text-[#5a6061] bg-[#fafafa] border-[#e5e5e5]" },
           ] as const
         ).map(({ key, label, color }) => (
           <div key={key} className={`rounded-xl border p-4 ${color}`}>
@@ -296,7 +287,7 @@ export default function DashboardListings({
                       size="sm"
                       variant="outline"
                       className="border-red-200 text-red-700 hover:bg-red-50"
-                      onClick={() => toggleStatus(property.id, "INACTIVE")}
+                      onClick={() => setInactiveConfirmId(property.id)}
                       disabled={isLoading}
                     >
                       {isLoading ? (
@@ -324,7 +315,7 @@ export default function DashboardListings({
                       size="sm"
                       variant="outline"
                       className="border-red-200 text-red-600 hover:bg-red-50 mt-1"
-                      onClick={() => requestDelete(property.id)}
+                      onClick={() => setDeleteConfirmId(property.id)}
                       disabled={deleteLoading === property.id}
                     >
                       {deleteLoading === property.id ? (
@@ -394,6 +385,41 @@ export default function DashboardListings({
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Mark as Rented/Sold confirm */}
+      <Modal
+        open={!!inactiveConfirmId}
+        onClose={() => setInactiveConfirmId(null)}
+        title="Mark as Rented / Sold?"
+        description="All interested seekers will be notified. You can reactivate this listing later if needed."
+        confirmLabel="Yes, Mark as Rented/Sold"
+        cancelLabel="Cancel"
+        onConfirm={async () => {
+          if (!inactiveConfirmId) return;
+          const id = inactiveConfirmId;
+          setInactiveConfirmId(null);
+          await toggleStatus(id, "INACTIVE");
+        }}
+        loading={!!statusLoading}
+      />
+
+      {/* Request deletion confirm */}
+      <Modal
+        open={!!deleteConfirmId}
+        onClose={() => setDeleteConfirmId(null)}
+        title="Request Deletion?"
+        description="An admin will review your request before permanently removing this listing."
+        confirmLabel="Request Deletion"
+        cancelLabel="Cancel"
+        onConfirm={async () => {
+          if (!deleteConfirmId) return;
+          const id = deleteConfirmId;
+          setDeleteConfirmId(null);
+          await requestDelete(id);
+        }}
+        danger
+        loading={!!deleteLoading}
+      />
     </>
   );
 }

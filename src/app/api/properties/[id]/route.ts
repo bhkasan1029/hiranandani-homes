@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { createPropertySchema } from "@/lib/validations/property";
+import { stringifyAmenities } from "@/lib/utils/formatters";
 
 export async function GET(
   _req: NextRequest,
@@ -35,7 +37,7 @@ export async function GET(
       updatedAt: true,
       // flatNumber intentionally excluded from public detail
       images: {
-        select: { id: true, url: true, s3Key: true, isPrimary: true },
+        select: { id: true, url: true, isPrimary: true },
         orderBy: { isPrimary: "desc" },
       },
       priceHistory: {
@@ -81,16 +83,30 @@ export async function PUT(
 
   const body = await req.json();
 
+  const parsed = createPropertySchema.safeParse(body);
+  if (!parsed.success) {
+    const issues = parsed.error.issues ?? [];
+    return NextResponse.json({ error: issues[0]?.message ?? "Invalid input" }, { status: 400 });
+  }
+
+  const { price, deposit, lockInMonths, amenities, ...rest } = parsed.data;
+
   const updated = await prisma.property.update({
     where: { id },
-    data: { ...body, status: "PENDING" }, // Re-triggers verification
+    data: {
+      ...rest,
+      price,
+      deposit: deposit ?? null,
+      lockInMonths: lockInMonths && lockInMonths > 0 ? lockInMonths : null,
+      amenities: stringifyAmenities(amenities ?? []),
+      status: "PENDING",
+    },
     select: { id: true, status: true },
   });
 
-  // Track price change
-  if (body.price && body.price !== property.price) {
+  if (price !== property.price) {
     await prisma.priceHistory.create({
-      data: { propertyId: id, price: body.price, source: "LISTING" },
+      data: { propertyId: id, price, source: "LISTING" },
     });
   }
 

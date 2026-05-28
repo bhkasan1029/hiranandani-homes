@@ -19,15 +19,15 @@ export const propertyStep1Schema = z.object({
   totalFloors: z.coerce.number().min(1).max(100).optional(),
   furnished: z.enum(["FURNISHED", "SEMI_FURNISHED", "UNFURNISHED"]),
   amenities: z.array(z.string()).default([]),
-  latitude:  z.coerce.number({ message: "Pin the property location on the map" }),
+  latitude: z.coerce.number({ message: "Pin the property location on the map" }),
   longitude: z.coerce.number({ message: "Pin the property location on the map" }),
 });
 
 export const propertyStep3Schema = z.object({
   price: z.coerce.number().min(1000, "Price must be at least ₹1,000"),
   deposit: z.coerce.number().min(0).optional(),
-  rentNegotiable:   z.boolean().default(false),
-  lockInMonths:     z.coerce.number().int().min(0).max(60).optional(),
+  rentNegotiable: z.boolean().default(false),
+  lockInMonths: z.coerce.number().int().min(0).max(60).optional(),
   lockInNegotiable: z.boolean().default(false),
 });
 
@@ -37,10 +37,10 @@ export const propertyImageSchema = z.object({
   isPrimary: z.boolean().default(false),
 });
 
-export const createPropertySchema = propertyStep1Schema.merge(
-  propertyStep3Schema
-);
-
+export const createPropertySchema = z.object({
+  ...propertyStep1Schema.shape,
+  ...propertyStep3Schema.shape
+});
 export type PropertyStep1 = z.infer<typeof propertyStep1Schema>;
 export type PropertyStep3 = z.infer<typeof propertyStep3Schema>;
 export type CreateProperty = z.infer<typeof createPropertySchema>;
