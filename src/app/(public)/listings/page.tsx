@@ -10,7 +10,7 @@ export default function ListingsPage() {
         {/* Filter Sidebar */}
         <aside className="hidden lg:block w-64 shrink-0">
           <div
-            className="bg-white rounded-xl p-8 sticky top-28"
+            className="bg-white rounded-xl p-5 sticky top-24 h-[calc(100vh-7rem)] overflow-y-auto"
             style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.03)" }}
           >
             <Suspense fallback={<div className="h-96 animate-pulse bg-[#f2f4f4] rounded-lg" />}>

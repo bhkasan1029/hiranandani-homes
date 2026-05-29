@@ -7,6 +7,7 @@ interface AnimatedCounterProps {
   suffix?: string;
   duration?: number;
   label: string;
+  dark?: boolean;
 }
 
 export default function AnimatedCounter({
@@ -14,6 +15,7 @@ export default function AnimatedCounter({
   suffix = "",
   duration = 1600,
   label,
+  dark = false,
 }: AnimatedCounterProps) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -49,12 +51,11 @@ export default function AnimatedCounter({
   }, [end, duration]);
 
   return (
-    <div ref={ref} className="text-center md:text-left">
-      <div className="text-3xl sm:text-4xl font-black text-[#0B0B0C] tracking-tighter mb-1">
-        {count}
-        {suffix}
+    <div ref={ref}>
+      <div className={`text-3xl sm:text-4xl font-black tracking-tighter mb-1 ${dark ? "text-white" : "text-[#0B0B0C]"}`}>
+        {count}{suffix}
       </div>
-      <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#5a6061]">
+      <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${dark ? "text-white/45" : "text-[#5a6061]"}`}>
         {label}
       </div>
     </div>

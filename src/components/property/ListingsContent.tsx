@@ -39,17 +39,33 @@ interface PropertyCardData {
 
 function SkeletonGrid({ isGrid }: { isGrid: boolean }) {
   return (
-    <div className={isGrid ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8" : "flex flex-col gap-4 sm:gap-6"}>
-      {Array.from({ length: PAGE_SIZE }).map((_, i) => (
-        <div key={i} className="bg-white rounded-xl overflow-hidden animate-pulse">
-          <div className="h-48 sm:h-56 bg-zinc-100" />
-          <div className="p-4 sm:p-5 space-y-3">
-            <div className="h-4 bg-zinc-100 rounded w-3/4" />
-            <div className="h-3 bg-zinc-50 rounded w-1/2" />
-            <div className="h-5 bg-zinc-100 rounded w-1/3 mt-4" />
+    <div className={isGrid ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8" : "flex flex-col gap-3 sm:gap-4"}>
+      {Array.from({ length: PAGE_SIZE }).map((_, i) =>
+        isGrid ? (
+          <div key={i} className="bg-white rounded-xl overflow-hidden animate-pulse">
+            <div className="h-48 sm:h-56 bg-zinc-100" />
+            <div className="p-4 sm:p-5 space-y-3">
+              <div className="h-4 bg-zinc-100 rounded w-3/4" />
+              <div className="h-3 bg-zinc-50 rounded w-1/2" />
+              <div className="h-5 bg-zinc-100 rounded w-1/3 mt-4" />
+            </div>
           </div>
-        </div>
-      ))}
+        ) : (
+          <div key={i} className="bg-white rounded-xl overflow-hidden animate-pulse flex flex-col sm:flex-row">
+            <div className="w-full sm:w-[220px] md:w-[260px] h-44 sm:h-auto bg-zinc-100 flex-shrink-0" />
+            <div className="flex-1 p-4 sm:p-5 space-y-3">
+              <div className="h-4 bg-zinc-100 rounded w-3/4" />
+              <div className="h-3 bg-zinc-50 rounded w-1/2" />
+              <div className="flex gap-3 mt-2">
+                <div className="h-3 bg-zinc-100 rounded w-16" />
+                <div className="h-3 bg-zinc-100 rounded w-16" />
+                <div className="h-3 bg-zinc-100 rounded w-20" />
+              </div>
+              <div className="h-5 bg-zinc-100 rounded w-1/3 mt-4" />
+            </div>
+          </div>
+        )
+      )}
     </div>
   );
 }
@@ -182,21 +198,32 @@ export default function ListingsContent() {
         <MapView properties={properties} />
       ) : (
         <>
-          <div className={isGrid ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-stretch" : "flex flex-col gap-4 sm:gap-6"}>
+          <div className={isGrid ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-stretch" : "flex flex-col gap-3 sm:gap-4"}>
             {properties.map((p) => (
-              <PropertyCard key={p.id} property={p} />
+              <PropertyCard key={p.id} property={p} variant={isGrid ? "grid" : "list"} />
             ))}
             {loadingMore &&
-              Array.from({ length: PAGE_SIZE }).map((_, i) => (
-                <div key={`sk-${i}`} className="bg-white rounded-xl overflow-hidden animate-pulse">
-                  <div className="h-48 sm:h-56 bg-zinc-100" />
-                  <div className="p-4 sm:p-5 space-y-3">
-                    <div className="h-4 bg-zinc-100 rounded w-3/4" />
-                    <div className="h-3 bg-zinc-50 rounded w-1/2" />
-                    <div className="h-5 bg-zinc-100 rounded w-1/3 mt-4" />
+              Array.from({ length: PAGE_SIZE }).map((_, i) =>
+                isGrid ? (
+                  <div key={`sk-${i}`} className="bg-white rounded-xl overflow-hidden animate-pulse">
+                    <div className="h-48 sm:h-56 bg-zinc-100" />
+                    <div className="p-4 sm:p-5 space-y-3">
+                      <div className="h-4 bg-zinc-100 rounded w-3/4" />
+                      <div className="h-3 bg-zinc-50 rounded w-1/2" />
+                      <div className="h-5 bg-zinc-100 rounded w-1/3 mt-4" />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ) : (
+                  <div key={`sk-${i}`} className="bg-white rounded-xl overflow-hidden animate-pulse flex flex-col sm:flex-row">
+                    <div className="w-full sm:w-[220px] md:w-[260px] h-44 sm:h-auto bg-zinc-100 flex-shrink-0" />
+                    <div className="flex-1 p-4 sm:p-5 space-y-3">
+                      <div className="h-4 bg-zinc-100 rounded w-3/4" />
+                      <div className="h-3 bg-zinc-50 rounded w-1/2" />
+                      <div className="h-5 bg-zinc-100 rounded w-1/3 mt-4" />
+                    </div>
+                  </div>
+                )
+              )}
           </div>
 
           <div className="mt-10 sm:mt-16 flex justify-center">

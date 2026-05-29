@@ -32,7 +32,7 @@ export const propertyStep3Schema = z.object({
 });
 
 export const propertyImageSchema = z.object({
-  url: z.string().url(),
+  url: z.url(),
   s3Key: z.string(),
   isPrimary: z.boolean().default(false),
 });

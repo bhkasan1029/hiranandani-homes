@@ -172,18 +172,20 @@ export default async function HomePage() {
           STATS BAR
       ══════════════════════════════════════════════════════════════════ */}
       <section className="py-12 sm:py-16 bg-[#f9f9f9] px-5 sm:px-8">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          <AnimatedCounter end={activeListings} suffix="+" label="Active Listings" />
-          <AnimatedCounter end={completedDeals} suffix="+" label="Deals Closed" />
-          <AnimatedCounter end={owners} suffix="+" label="Verified Owners" />
-          <div className="text-center md:text-left">
-            <div className="text-3xl sm:text-4xl font-black text-[#0B0B0C] tracking-tighter mb-1">
-              Always
+        <div className="max-w-[1440px] mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {[
+            <AnimatedCounter key="listings" end={activeListings} suffix="+" label="Active Listings" dark />,
+            <AnimatedCounter key="deals" end={completedDeals} suffix="+" label="Deals Closed" dark />,
+            <AnimatedCounter key="owners" end={owners} suffix="+" label="Verified Owners" dark />,
+            <div key="free">
+              <div className="text-3xl sm:text-4xl font-black text-white tracking-tighter mb-1">Always</div>
+              <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-white/45">Free</div>
+            </div>,
+          ].map((child, i) => (
+            <div key={i} className="bg-[#1c1c1c] rounded-lg p-6 sm:p-8">
+              {child}
             </div>
-            <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#5a6061]">
-              Free
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
