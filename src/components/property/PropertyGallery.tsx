@@ -87,13 +87,23 @@ export default function PropertyGallery({ images, title }: Props) {
   const [mobileIdx, setMobileIdx] = useState(0);         // mobile carousel active index
   const [mobileExpandedIdx, setMobileExpandedIdx] = useState(0); // mobile lightbox index
   const scrollRef = useRef<HTMLDivElement>(null);
+  const thumbsRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     const idx = Math.round(el.scrollLeft / el.clientWidth);
     setMobileIdx(idx);
+    // keep active thumbnail visible
+    const thumb = thumbsRef.current?.children[idx] as HTMLElement | undefined;
+    thumb?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   }, []);
+
+  function scrollToSlide(idx: number) {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ left: idx * el.clientWidth, behavior: "smooth" });
+  }
 
   if (images.length === 0) {
     return (
@@ -113,51 +123,72 @@ export default function PropertyGallery({ images, title }: Props) {
     setExpanded(true);
   }
 
-  const showDots = images.length <= 10;
-
   return (
     <>
-      {/* ── MOBILE carousel (md:hidden) ─────────────────────────────── */}
-      <div className="md:hidden relative h-[300px] rounded-xl overflow-hidden">
-        <div
-          ref={scrollRef}
-          onScroll={handleScroll}
-          className="flex h-full overflow-x-auto snap-x snap-mandatory"
-          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
-        >
-          {images.map((img, i) => (
-            <button
-              key={img.id}
-              className="snap-start shrink-0 w-full h-full relative focus:outline-none"
-              onClick={() => openExpanded(i)}
-              aria-label={`View photo ${i + 1}`}
-            >
-              <Image
-                src={img.url}
-                alt={`${title} ${i + 1}`}
-                fill
-                className="object-cover"
-                sizes="100vw"
-                priority={i === 0}
-              />
-            </button>
-          ))}
+      {/* ── MOBILE carousel + thumbnail strip (md:hidden) ──────────── */}
+      <div className="md:hidden space-y-2">
+        {/* Main carousel */}
+        <div className="relative h-[300px] rounded-xl overflow-hidden">
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex h-full overflow-x-auto snap-x snap-mandatory"
+            style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+          >
+            {images.map((img, i) => (
+              <button
+                key={img.id}
+                className="snap-start shrink-0 w-full h-full relative focus:outline-none"
+                onClick={() => openExpanded(i)}
+                aria-label={`View photo ${i + 1}`}
+              >
+                <Image
+                  src={img.url}
+                  alt={`${title} ${i + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="100vw"
+                  priority={i === 0}
+                />
+              </button>
+            ))}
+          </div>
+
+          {/* Counter pill */}
+          <div className="absolute top-3 right-3 bg-black/55 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
+            {mobileIdx + 1} / {images.length}
+          </div>
         </div>
 
-        {/* Counter pill */}
-        <div className="absolute top-3 right-3 bg-black/55 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
-          {mobileIdx + 1} / {images.length}
-        </div>
-
-        {/* Dot indicators */}
-        {showDots && images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 pointer-events-none">
-            {images.map((_, i) => (
-              <div
-                key={i}
-                className="h-1.5 rounded-full bg-white transition-all duration-200"
-                style={{ width: i === mobileIdx ? 16 : 6, opacity: i === mobileIdx ? 1 : 0.45 }}
-              />
+        {/* Thumbnail strip */}
+        {images.length > 1 && (
+          <div
+            ref={thumbsRef}
+            className="flex gap-1.5 overflow-x-auto"
+            style={{ scrollbarWidth: "none" } as React.CSSProperties}
+          >
+            {images.map((img, i) => (
+              <button
+                key={img.id}
+                onClick={() => scrollToSlide(i)}
+                className="shrink-0 relative rounded-md overflow-hidden transition-all duration-200"
+                style={{
+                  width: 52,
+                  height: 40,
+                  opacity: i === mobileIdx ? 1 : 0.45,
+                  outline: i === mobileIdx ? "2px solid #1A1A1A" : "2px solid transparent",
+                  outlineOffset: 1,
+                }}
+                aria-label={`Go to photo ${i + 1}`}
+              >
+                <Image
+                  src={img.url}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="52px"
+                />
+              </button>
             ))}
           </div>
         )}
