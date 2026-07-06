@@ -308,22 +308,22 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════
           OWNER CTA  (dark split card)
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 sm:py-24 px-5 sm:px-8 max-w-[1440px] mx-auto">
+      <section className="py-8 sm:py-24 px-4 sm:px-8 max-w-[1440px] mx-auto">
         <div className="bg-[#0B0B0C] rounded-xl overflow-hidden flex flex-col md:flex-row items-center">
 
           {/* Text side */}
-          <div className="w-full md:w-1/2 p-8 sm:p-12 lg:p-20">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tighter mb-4 sm:mb-6 leading-tight">
+          <div className="w-full md:w-1/2 p-6 sm:p-12 lg:p-20">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tighter mb-3 sm:mb-6 leading-tight">
               Own a Property in Hiranandani?
             </h2>
-            <p className="text-[#adb3b4] text-base sm:text-lg mb-8 sm:mb-10 leading-relaxed max-w-md">
+            <p className="text-[#adb3b4] text-sm sm:text-lg mb-6 sm:mb-10 leading-relaxed max-w-md">
               List it for free and reach thousands of verified seekers directly.
               We help you find the best tenants or buyers without commissions.
             </p>
             <ListPropertyCTA />
           </div>
           {/* Image side */}
-          <div className="w-full md:w-1/2 h-52 sm:h-64 md:h-auto self-stretch">
+          <div className="w-full md:w-1/2 h-40 sm:h-64 md:h-auto self-stretch">
             <img
               src="/images/hiranandanilol.jpeg"
               alt="Hiranandani Estate"

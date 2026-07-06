@@ -31,7 +31,7 @@ export default function ListPropertyCTA() {
       <BecomeOwnerModal open={modalOpen} onClose={() => setModalOpen(false)} />
       <button
         onClick={handleClick}
-        className="inline-block bg-white text-[#0B0B0C] py-4 px-10 rounded-xl font-bold text-base hover:opacity-90 transition-opacity"
+        className="inline-block bg-white text-[#0B0B0C] py-2.5 px-6 sm:py-4 sm:px-10 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base hover:opacity-90 transition-opacity"
       >
         List Your Property
       </button>

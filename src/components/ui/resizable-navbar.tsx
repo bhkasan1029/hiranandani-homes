@@ -250,26 +250,31 @@ export function MobileNavToggle({
   isOpen: boolean;
   onClick: () => void;
 }) {
-  const { scrolled, mobileOpen, darkHero } = useNavbar();
-  // scrolled → white lines, mobileOpen → dark lines, at top on light page → dark lines, at top on dark hero → white lines
-  const lineColor = scrolled ? "#ffffff" : mobileOpen ? "#1A1A1A" : darkHero ? "#ffffff" : "#1A1A1A";
+  const { scrolled, darkHero } = useNavbar();
+  const lineColor = scrolled ? "#ffffff" : isOpen ? "#1A1A1A" : darkHero ? "#ffffff" : "#1A1A1A";
+
+  // When the menu just opens on a dark-hero page the container background is
+  // still mid-transition from transparent → #F5F5F5 (500 ms). Give the button
+  // an immediate solid background so the dark X is visible right away.
+  const buttonBg = isOpen && !scrolled ? "#F5F5F5" : "transparent";
 
   return (
     <button
       onClick={onClick}
       aria-label="Toggle menu"
-      className="p-2 rounded-lg transition-colors duration-200 focus:outline-none"
+      className="p-1.5 rounded-md transition-colors duration-200 focus:outline-none"
+      style={{ background: buttonBg, transition: "background 0s" }}
     >
-      <div className="w-5 h-4 flex flex-col justify-between">
+      <div className="w-4 h-3.5 flex flex-col justify-between">
         <span
-          className="block h-0.5 w-full rounded-full transition-all duration-300 origin-center"
+          className="block h-px w-full rounded-full transition-all duration-300 origin-center"
           style={{
             background: lineColor,
-            transform: isOpen ? "rotate(45deg) translateY(7px)" : "none",
+            transform: isOpen ? "rotate(45deg) translateY(6px)" : "none",
           }}
         />
         <span
-          className="block h-0.5 w-full rounded-full transition-all duration-300"
+          className="block h-px w-full rounded-full transition-all duration-300"
           style={{
             background: lineColor,
             opacity: isOpen ? 0 : 1,
@@ -277,10 +282,10 @@ export function MobileNavToggle({
           }}
         />
         <span
-          className="block h-0.5 w-full rounded-full transition-all duration-300 origin-center"
+          className="block h-px w-full rounded-full transition-all duration-300 origin-center"
           style={{
             background: lineColor,
-            transform: isOpen ? "rotate(-45deg) translateY(-7px)" : "none",
+            transform: isOpen ? "rotate(-45deg) translateY(-6px)" : "none",
           }}
         />
       </div>
