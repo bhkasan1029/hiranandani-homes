@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { ChevronRight, ChevronLeft, ImageOff, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -83,7 +83,10 @@ function ImageSlide({
 
 export default function PropertyGallery({ images, title }: Props) {
   const [expanded, setExpanded] = useState(false);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(0);                   // desktop lightbox: groups of 3
+  const [mobileIdx, setMobileIdx] = useState(0);         // mobile carousel active index
+  const [mobileExpandedIdx, setMobileExpandedIdx] = useState(0); // mobile lightbox index
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   if (images.length === 0) {
     return (
@@ -97,26 +100,75 @@ export default function PropertyGallery({ images, title }: Props) {
   const totalPages = Math.ceil(images.length / 3);
   const hasMore = images.length > 3;
 
-  function openExpanded() {
-    setPage(0);
+  function openExpanded(startIdx = 0) {
+    setPage(Math.floor(startIdx / 3));
+    setMobileExpandedIdx(startIdx);
     setExpanded(true);
   }
 
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    setMobileIdx(idx);
+  }, []);
+
+  const showDots = images.length <= 10;
+
   return (
     <>
-      {/* Normal gallery */}
-      <div className="relative h-[220px] sm:h-[320px] lg:h-[440px] rounded-xl overflow-hidden">
-        <ImageSlide
-          images={images.slice(0, 3)}
-          title={title}
-          startIndex={0}
-          rounded
-        />
+      {/* ── MOBILE carousel (md:hidden) ─────────────────────────────── */}
+      <div className="md:hidden relative h-[300px] rounded-xl overflow-hidden">
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex h-full overflow-x-auto snap-x snap-mandatory"
+          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+        >
+          {images.map((img, i) => (
+            <button
+              key={img.id}
+              className="snap-start shrink-0 w-full h-full relative focus:outline-none"
+              onClick={() => openExpanded(i)}
+              aria-label={`View photo ${i + 1}`}
+            >
+              <Image
+                src={img.url}
+                alt={`${title} ${i + 1}`}
+                fill
+                className="object-cover"
+                sizes="100vw"
+                priority={i === 0}
+              />
+            </button>
+          ))}
+        </div>
 
-        {/* Arrow to open lightbox */}
+        {/* Counter pill */}
+        <div className="absolute top-3 right-3 bg-black/55 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
+          {mobileIdx + 1} / {images.length}
+        </div>
+
+        {/* Dot indicators */}
+        {showDots && images.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 pointer-events-none">
+            {images.map((_, i) => (
+              <div
+                key={i}
+                className="h-1.5 rounded-full bg-white transition-all duration-200"
+                style={{ width: i === mobileIdx ? 16 : 6, opacity: i === mobileIdx ? 1 : 0.45 }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ── DESKTOP 3-panel grid (hidden md:block) ──────────────────── */}
+      <div className="hidden md:block relative h-[320px] lg:h-[440px] rounded-xl overflow-hidden">
+        <ImageSlide images={images.slice(0, 3)} title={title} startIndex={0} rounded />
         {hasMore && (
           <button
-            onClick={openExpanded}
+            onClick={() => openExpanded(0)}
             className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-black/55 hover:bg-black/75 backdrop-blur-sm text-white rounded-full p-2 transition-all shadow-lg"
             aria-label="View all photos"
           >
@@ -125,7 +177,7 @@ export default function PropertyGallery({ images, title }: Props) {
         )}
       </div>
 
-      {/* Lightbox */}
+      {/* ── LIGHTBOX ────────────────────────────────────────────────── */}
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -153,40 +205,69 @@ export default function PropertyGallery({ images, title }: Props) {
                 <X className="w-6 h-6" />
               </button>
 
-              {/* Image slide */}
-              <ImageSlide
-                images={images.slice(page * 3, page * 3 + 3)}
-                title={title}
-                startIndex={page * 3}
-                rounded
-              />
+              {/* ── Mobile lightbox: single image ── */}
+              <div className="md:hidden w-full h-full relative rounded-lg overflow-hidden bg-black">
+                <Image
+                  src={images[mobileExpandedIdx].url}
+                  alt={`${title} ${mobileExpandedIdx + 1}`}
+                  fill
+                  className="object-contain"
+                  sizes="100vw"
+                  priority
+                />
+                {mobileExpandedIdx > 0 && (
+                  <button
+                    onClick={() => setMobileExpandedIdx((i) => i - 1)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/55 hover:bg-black/75 backdrop-blur-sm text-white rounded-full p-2.5 transition-all shadow-lg"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                )}
+                {mobileExpandedIdx < images.length - 1 && (
+                  <button
+                    onClick={() => setMobileExpandedIdx((i) => i + 1)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/55 hover:bg-black/75 backdrop-blur-sm text-white rounded-full p-2.5 transition-all shadow-lg"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                )}
+                {images.length > 1 && (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-black/55 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                    {mobileExpandedIdx + 1} / {images.length}
+                  </div>
+                )}
+              </div>
 
-              {/* Prev arrow */}
-              {page > 0 && (
-                <button
-                  onClick={() => setPage((p) => p - 1)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/55 hover:bg-black/75 backdrop-blur-sm text-white rounded-full p-2.5 transition-all shadow-lg"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-              )}
-
-              {/* Next arrow */}
-              {page < totalPages - 1 && (
-                <button
-                  onClick={() => setPage((p) => p + 1)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/55 hover:bg-black/75 backdrop-blur-sm text-white rounded-full p-2.5 transition-all shadow-lg"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              )}
-
-              {/* Page indicator */}
-              {totalPages > 1 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-black/55 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                  {page + 1} / {totalPages}
-                </div>
-              )}
+              {/* ── Desktop lightbox: 3-panel ImageSlide (unchanged) ── */}
+              <div className="hidden md:block w-full h-full">
+                <ImageSlide
+                  images={images.slice(page * 3, page * 3 + 3)}
+                  title={title}
+                  startIndex={page * 3}
+                  rounded
+                />
+                {page > 0 && (
+                  <button
+                    onClick={() => setPage((p) => p - 1)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/55 hover:bg-black/75 backdrop-blur-sm text-white rounded-full p-2.5 transition-all shadow-lg"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                )}
+                {page < totalPages - 1 && (
+                  <button
+                    onClick={() => setPage((p) => p + 1)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/55 hover:bg-black/75 backdrop-blur-sm text-white rounded-full p-2.5 transition-all shadow-lg"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                )}
+                {totalPages > 1 && (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-black/55 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                    {page + 1} / {totalPages}
+                  </div>
+                )}
+              </div>
             </motion.div>
           </motion.div>
         )}

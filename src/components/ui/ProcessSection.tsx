@@ -91,17 +91,28 @@ function PinnedProcessSection() {
 
   const step0X = useTransform(smoothProgress, PHASE.step0.x, [X_OFFSET, 0]);
   const step0Opacity = useTransform(smoothProgress, PHASE.step0.opacity, [0, 1]);
+  // Scale peaks at fully-visible moment (opacity end), then settles to 1 on arrival
   const step0Scale = useTransform(
     smoothProgress,
-    [PHASE.step0.x[0], PHASE.step0.x[1], 0.49, 0.52],
-    [1, 1, 1.12, 1]
+    [PHASE.step0.x[0], PHASE.step0.opacity[1], PHASE.step0.x[1]],
+    [1, 1.15, 1]
   );
 
   const step1X = useTransform(smoothProgress, PHASE.step1.x, [X_OFFSET, 0]);
   const step1Opacity = useTransform(smoothProgress, PHASE.step1.opacity, [0, 1]);
+  const step1Scale = useTransform(
+    smoothProgress,
+    [PHASE.step1.x[0], PHASE.step1.opacity[1], PHASE.step1.x[1]],
+    [1, 1.15, 1]
+  );
 
   const step2X = useTransform(smoothProgress, PHASE.step2.x, [X_OFFSET, 0]);
   const step2Opacity = useTransform(smoothProgress, PHASE.step2.opacity, [0, 1]);
+  const step2Scale = useTransform(
+    smoothProgress,
+    [PHASE.step2.x[0], PHASE.step2.opacity[1], PHASE.step2.x[1]],
+    [1, 1.15, 1]
+  );
 
   return (
     <div ref={pinWrapperRef} className="relative" style={{ height: "400vh" }}>
@@ -121,8 +132,8 @@ function PinnedProcessSection() {
             </div>
 
             <Step {...STEPS[0]} x={step0X} opacity={step0Opacity} scale={step0Scale} />
-            <Step {...STEPS[1]} x={step1X} opacity={step1Opacity} />
-            <Step {...STEPS[2]} x={step2X} opacity={step2Opacity} />
+            <Step {...STEPS[1]} x={step1X} opacity={step1Opacity} scale={step1Scale} />
+            <Step {...STEPS[2]} x={step2X} opacity={step2Opacity} scale={step2Scale} />
           </div>
         </div>
       </div>

@@ -67,13 +67,15 @@ export function Navbar({
         style={{
           padding: scrolled
             ? "clamp(8px,1.5vw,12px) clamp(12px,3vw,20px) 0"
+            : mobileOpen
+            ? "8px 12px 0"
             : "0",
         }}
       >
         <div
           className="w-full transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
           style={{
-            maxWidth: scrolled ? "min(900px, calc(100vw - 32px))" : "100%",
+            maxWidth: scrolled ? "min(900px, calc(100vw - 32px))" : mobileOpen ? "calc(100vw - 24px)" : "100%",
             borderRadius: scrolled ? "2rem" : mobileOpen ? "1.25rem" : "0",
             background: scrolled
               ? "#111111"
@@ -311,7 +313,7 @@ export function MobileNavMenu({
       style={{ maxHeight: isOpen ? "480px" : "0", opacity: isOpen ? 1 : 0 }}
     >
       <div
-        className="flex flex-col gap-0.5 px-5 pb-6 pt-2"
+        className="flex flex-col gap-0.5 px-5 pb-4 pt-2"
         style={{
           borderTop: `1px solid ${
             scrolled ? "rgba(255,255,255,0.08)" : "rgba(26,26,26,0.08)"
