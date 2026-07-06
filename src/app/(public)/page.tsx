@@ -320,7 +320,9 @@ export default async function HomePage() {
               List it for free and reach thousands of verified seekers directly.
               We help you find the best tenants or buyers without commissions.
             </p>
-            <ListPropertyCTA />
+            <div className="flex justify-center md:justify-start">
+              <ListPropertyCTA />
+            </div>
           </div>
           {/* Image side */}
           <div className="w-full md:w-1/2 h-40 sm:h-64 md:h-auto self-stretch">
