@@ -265,16 +265,16 @@ export function MobileNavToggle({
       className="p-1.5 rounded-md transition-colors duration-200 focus:outline-none"
       style={{ background: buttonBg, transition: "background 0s" }}
     >
-      <div className="w-4 h-3.5 flex flex-col justify-between">
+      <div className="w-5 h-4 flex flex-col justify-between">
         <span
-          className="block h-px w-full rounded-full transition-all duration-300 origin-center"
+          className="block h-0.5 w-full rounded-full transition-all duration-300 origin-center"
           style={{
             background: lineColor,
-            transform: isOpen ? "rotate(45deg) translateY(6px)" : "none",
+            transform: isOpen ? "rotate(45deg) translateY(7px)" : "none",
           }}
         />
         <span
-          className="block h-px w-full rounded-full transition-all duration-300"
+          className="block h-0.5 w-full rounded-full transition-all duration-300"
           style={{
             background: lineColor,
             opacity: isOpen ? 0 : 1,
@@ -282,10 +282,10 @@ export function MobileNavToggle({
           }}
         />
         <span
-          className="block h-px w-full rounded-full transition-all duration-300 origin-center"
+          className="block h-0.5 w-full rounded-full transition-all duration-300 origin-center"
           style={{
             background: lineColor,
-            transform: isOpen ? "rotate(-45deg) translateY(-6px)" : "none",
+            transform: isOpen ? "rotate(-45deg) translateY(-7px)" : "none",
           }}
         />
       </div>
