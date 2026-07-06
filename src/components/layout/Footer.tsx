@@ -4,87 +4,86 @@ import { SITE_NAME } from "@/lib/constants";
 export default function Footer() {
   return (
     <footer className="bg-[#111111] text-white">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 py-16 sm:py-20">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 sm:py-20">
 
-        {/* Main grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-12">
+        {/* Mobile: brand top, then 2-col links. Desktop: 4-col grid */}
+        <div className="flex flex-col md:grid md:grid-cols-4 md:gap-12">
 
-          {/* Brand — full width on mobile, 2 cols on md+ */}
-          <div className="sm:col-span-2">
-            <Link href="/" className="inline-flex items-center gap-1.5 group mb-5">
-              <span className="font-bold text-xl tracking-tight text-white">
+          {/* Brand */}
+          <div className="md:col-span-2 mb-6 sm:mb-10 md:mb-0">
+            <Link href="/" className="inline-flex items-center gap-1.5 group mb-3 sm:mb-5">
+              <span className="font-bold text-lg sm:text-xl tracking-tight text-white">
                 Hiranandani<span className="text-white/60">Properties</span>
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-white/40 mt-1 group-hover:scale-125 transition-transform duration-300" />
             </Link>
-            <p className="text-white/40 text-sm leading-relaxed max-w-xs">
-              Exclusively serving Hiranandani Estate, Thane. Completely free for
-              owners and seekers alike. Zero brokerage, no middlemen.
+            <p className="text-white/40 text-xs sm:text-sm leading-relaxed max-w-xs">
+              Exclusively serving Hiranandani Estate, Thane. Completely free.
+              Zero brokerage, no middlemen.
             </p>
-            <div className="flex items-center gap-3 mt-6">
-              <div className="h-px w-6 bg-white/20" />
-              <span className="text-white/30 text-[10px] tracking-[0.14em] uppercase font-medium">
-                Hiranandani Estate, Thane
-              </span>
+          </div>
+
+          {/* Links — 2 columns side by side on mobile */}
+          <div className="grid grid-cols-2 gap-6 sm:gap-8 md:contents">
+
+            {/* Explore */}
+            <div>
+              <h4 className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.14em] text-white/35 mb-3 sm:mb-5">
+                Explore
+              </h4>
+              <ul className="space-y-2 sm:space-y-3">
+                {[
+                  { href: "/listings?listingType=RENT", label: "For Rent" },
+                  { href: "/listings?listingType=SALE", label: "For Sale" },
+                  { href: "/listings?type=FLAT",        label: "Flats" },
+                  { href: "/listings?type=VILLA",       label: "Villas" },
+                  { href: "/listings?type=OFFICE",      label: "Office Spaces" },
+                ].map(({ href, label }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className="text-xs sm:text-sm text-white/45 hover:text-white transition-colors duration-200"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
 
-          {/* Explore */}
-          <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/35 mb-5">
-              Explore
-            </h4>
-            <ul className="space-y-3">
-              {[
-                { href: "/listings?listingType=RENT", label: "Properties for Rent" },
-                { href: "/listings?listingType=SALE", label: "Properties for Sale" },
-                { href: "/listings?type=FLAT",        label: "Flats & Apartments" },
-                { href: "/listings?type=VILLA",       label: "Villas" },
-                { href: "/listings?type=OFFICE",      label: "Office Spaces" },
-              ].map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-sm text-white/45 hover:text-white transition-colors duration-200"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Company */}
+            <div>
+              <h4 className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.14em] text-white/35 mb-3 sm:mb-5">
+                Company
+              </h4>
+              <ul className="space-y-2 sm:space-y-3">
+                {[
+                  { href: "/how-it-works",    label: "How It Works" },
+                  { href: "/dashboard/new",   label: "List Property" },
+                  { href: "/listings",        label: "All Listings" },
+                ].map(({ href, label }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className="text-xs sm:text-sm text-white/45 hover:text-white transition-colors duration-200"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Company */}
-          <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/35 mb-5">
-              Company
-            </h4>
-            <ul className="space-y-3">
-              {[
-                { href: "/how-it-works",    label: "How It Works" },
-                { href: "/dashboard/new",   label: "List Your Property" },
-                { href: "/listings",        label: "Browse All Listings" },
-              ].map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-sm text-white/45 hover:text-white transition-colors duration-200"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-white/8 mt-14 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-white/25">
+        <div className="border-t border-white/8 mt-8 sm:mt-14 pt-5 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-3">
+          <p className="text-[10px] sm:text-xs text-white/25">
             © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
           </p>
-          <p className="text-xs text-white/25">
-            Real Estate Advisors · Zero Broker Commission
+          <p className="text-[10px] sm:text-xs text-white/25">
+            Zero Broker Commission
           </p>
         </div>
 
