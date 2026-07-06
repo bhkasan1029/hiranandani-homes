@@ -149,6 +149,7 @@ export default function PropertyMap({ lat, lng, propertyId, activeAmenity }: Pro
         position: { lat, lng },
         content:  makeIconPin("This Property", "#0B0B0C", HOME_ICON, 38),
         title:    "Property",
+        zIndex:   1,
       });
     })();
   }, [lat, lng]);
@@ -243,7 +244,7 @@ export default function PropertyMap({ lat, lng, propertyId, activeAmenity }: Pro
         bounds.extend(position);
 
         amenityMarkersRef.current.push(
-          new AME({ map, position, content: makeIconPin(name, color, AMENITY_ICON[activeAmenity], 30), title: name })
+          new AME({ map, position, content: makeIconPin(name, color, AMENITY_ICON[activeAmenity], 30), title: name, zIndex: 2 })
         );
       });
 

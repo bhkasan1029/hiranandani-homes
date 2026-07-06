@@ -19,6 +19,7 @@ import {
 import StackedCards from "@/components/ui/stacked-cards";
 import ListPropertyCTA from "@/components/property/ListPropertyCTA";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
+import ProcessSection from "@/components/ui/ProcessSection";
 
 async function getHomeData() {
   const [featured, stats] = await Promise.all([
@@ -58,6 +59,7 @@ async function getHomeData() {
 export default async function HomePage() {
   const { featured, stats } = await getHomeData();
   const [activeListings, completedDeals, owners] = stats;
+
 
   return (
     <div className="bg-[#f9f9f9] text-[#2d3435]">
@@ -202,10 +204,10 @@ export default async function HomePage() {
             </h2>
             <div className="space-y-6 sm:space-y-8">
               {[
-                { icon: PiggyBank,   title: "Completely Free",     desc: "Zero subscription fees or platform costs for tenants and buyers." },
-                { icon: ListChecks,  title: "Verified Listings",   desc: "Say goodbye to bait-and-switch. Every photo and detail is real." },
-                { icon: Zap,         title: "Instant Access",       desc: "Direct contact lines with owners for immediate viewings." },
-                { icon: ScanEye,     title: "Price Transparency",   desc: "View the true market rates without agent markups." },
+                { icon: PiggyBank, title: "Completely Free", desc: "Zero subscription fees or platform costs for tenants and buyers." },
+                { icon: ListChecks, title: "Verified Listings", desc: "Say goodbye to bait-and-switch. Every photo and detail is real." },
+                { icon: Zap, title: "Instant Access", desc: "Direct contact lines with owners for immediate viewings." },
+                { icon: ScanEye, title: "Price Transparency", desc: "View the true market rates without agent markups." },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="flex gap-4 sm:gap-6">
                   <div
@@ -304,45 +306,7 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════
           SIMPLE PROCESS
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-32 px-5 sm:px-8 max-w-[1440px] mx-auto">
-        <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-[#0B0B0C] mb-12 sm:mb-20">
-          Simple Process
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 sm:gap-12 relative">
-          {/* Horizontal connector line — desktop only */}
-          <div className="hidden md:block absolute top-12 left-0 w-full h-px bg-[#dde4e5] z-0" />
-
-          {[
-            {
-              icon: Search,
-              title: "Browse & Find",
-              desc: "Explore verified properties with high-resolution imagery and accurate descriptions.",
-            },
-            {
-              icon: Heart,
-              title: "Register Interest — Free",
-              desc: "Save your favorites and notify owners without paying a single rupee upfront.",
-            },
-            {
-              icon: KeyRound,
-              title: "Visit & Move In",
-              desc: "Schedule a viewing directly with the owner and finalise your dream home.",
-            },
-          ].map(({ icon: Icon, title, desc }) => (
-            <div
-              key={title}
-              className="relative z-10 flex flex-col items-center text-center"
-            >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white border-4 border-[#f9f9f9] flex items-center justify-center mb-5 sm:mb-8 shadow-sm">
-                <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-[#0B0B0C]" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#0B0B0C] mb-3 sm:mb-4">{title}</h3>
-              <p className="text-sm sm:text-base text-[#5a6061] max-w-xs leading-relaxed">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <ProcessSection />
 
       {/* ══════════════════════════════════════════════════════════════════
           OWNER CTA  (dark split card)
@@ -361,7 +325,6 @@ export default async function HomePage() {
             </p>
             <ListPropertyCTA />
           </div>
-
           {/* Image side */}
           <div className="w-full md:w-1/2 h-52 sm:h-64 md:h-auto self-stretch">
             <img

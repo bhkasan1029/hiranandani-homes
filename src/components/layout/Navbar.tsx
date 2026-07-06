@@ -134,7 +134,11 @@ export default function SiteNavbar({ forceScrolled = false }: { forceScrolled?: 
         onClose={() => setOwnerModalOpen(false)}
       />
 
-      <Navbar forceScrolled={forceScrolled}>
+      <Navbar
+        forceScrolled={forceScrolled}
+        mobileOpen={mobileOpen}
+        onMobileOpenChange={setMobileOpen}
+      >
         {/* ── Desktop ── */}
         <NavBody>
           <NavbarLogo />

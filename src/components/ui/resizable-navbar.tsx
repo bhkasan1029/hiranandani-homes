@@ -27,9 +27,21 @@ export const useNavbar = () => useContext(NavbarContext);
 // At top + menu open → #F5F5F5 fill, rounded card, so menu items are readable
 // Scrolled          → #111111 floating capsule
 
-export function Navbar({ children, forceScrolled = false }: { children: React.ReactNode; forceScrolled?: boolean }) {
+export function Navbar({
+  children,
+  forceScrolled = false,
+  mobileOpen: mobileOpenProp,
+  onMobileOpenChange,
+}: {
+  children: React.ReactNode;
+  forceScrolled?: boolean;
+  mobileOpen?: boolean;
+  onMobileOpenChange?: (v: boolean) => void;
+}) {
   const [scrolled, setScrolled] = useState(forceScrolled);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [internalMobileOpen, setInternalMobileOpen] = useState(false);
+  const mobileOpen = mobileOpenProp ?? internalMobileOpen;
+  const setMobileOpen = onMobileOpenChange ?? setInternalMobileOpen;
   const pathname = usePathname();
 
   // Only the landing page has a dark hero where white text is readable
