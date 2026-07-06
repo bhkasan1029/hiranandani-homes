@@ -184,22 +184,24 @@ export default function DashboardListings({
 
   return (
     <>
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
-        {(
-          [
-            { key: "ACTIVE", label: "Active", color: "text-[#0B0B0C] bg-[#f9f9f9] border-[#e0e0e0]" },
-            { key: "PENDING", label: "Pending", color: "text-[#2d3435] bg-white border-[#d4d4d4]" },
-            { key: "REJECTED", label: "Rejected", color: "text-[#0B0B0C] bg-[#f0f0f0] border-[#c8c8c8]" },
-            { key: "INACTIVE", label: "Inactive", color: "text-[#5a6061] bg-[#fafafa] border-[#e5e5e5]" },
-          ] as const
-        ).map(({ key, label, color }) => (
-          <div key={key} className={`rounded-xl border p-4 ${color}`}>
-            <p className="text-2xl font-bold">{counts[key]}</p>
-            <p className="text-sm font-medium mt-0.5">{label}</p>
-          </div>
-        ))}
-      </div>
+      {/* Stats — only shown when the owner has more than 5 listings */}
+      {properties.length > 5 && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
+          {(
+            [
+              { key: "ACTIVE", label: "Active", color: "text-[#0B0B0C] bg-[#f9f9f9] border-[#e0e0e0]" },
+              { key: "PENDING", label: "Pending", color: "text-[#2d3435] bg-white border-[#d4d4d4]" },
+              { key: "REJECTED", label: "Rejected", color: "text-[#0B0B0C] bg-[#f0f0f0] border-[#c8c8c8]" },
+              { key: "INACTIVE", label: "Inactive", color: "text-[#5a6061] bg-[#fafafa] border-[#e5e5e5]" },
+            ] as const
+          ).map(({ key, label, color }) => (
+            <div key={key} className={`rounded-xl border p-4 ${color}`}>
+              <p className="text-2xl font-bold">{counts[key]}</p>
+              <p className="text-sm font-medium mt-0.5">{label}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Listings */}
       <div className="space-y-4">
@@ -211,10 +213,10 @@ export default function DashboardListings({
           return (
             <div
               key={property.id}
-              className="flex gap-4 bg-white rounded-xl border border-gray-200 p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+              className="flex gap-5 bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 hover:shadow-sm transition-all"
             >
               {/* Thumbnail */}
-              <div className="w-24 h-20 rounded-lg bg-gray-100 shrink-0 overflow-hidden">
+              <div className="w-36 h-28 rounded-xl bg-gray-100 shrink-0 overflow-hidden">
                 {thumb ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -224,7 +226,7 @@ export default function DashboardListings({
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Building2 className="h-8 w-8 text-gray-300" />
+                    <Building2 className="h-9 w-9 text-gray-300" />
                   </div>
                 )}
               </div>
@@ -232,23 +234,24 @@ export default function DashboardListings({
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2 flex-wrap">
-                  <h3 className="text-sm font-semibold text-gray-900 truncate">
+                  <h3 className="text-base font-semibold text-gray-900 truncate">
                     {property.title}
                   </h3>
                   <span
-                    className={`text-xs font-medium px-2 py-0.5 rounded-full border ${badge.className} shrink-0`}
+                    className={`text-xs font-medium px-2.5 py-1 rounded-full border ${badge.className} shrink-0`}
                   >
                     {badge.label}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 mt-1.5">
                   {PROPERTY_TYPE_LABELS[property.type]} ·{" "}
                   {LISTING_TYPE_LABELS[property.listingType]} ·{" "}
                   {property.locality}
                   {property.bedrooms ? ` · ${property.bedrooms} BHK` : ""}
+                  {property.areaSqft ? ` · ${property.areaSqft.toLocaleString()} sq.ft` : ""}
                 </p>
-                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                  <p className="text-sm font-semibold text-blue-700">
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  <p className="text-base font-bold text-blue-700">
                     {formatPrice(property.price)}
                     {property.listingType === "RENT" ? "/mo" : ""}
                   </p>
@@ -265,7 +268,7 @@ export default function DashboardListings({
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex flex-wrap gap-2 mt-3">
+                <div className="flex flex-wrap gap-2 mt-3.5">
                   <Button
                     size="sm"
                     variant="outline"
