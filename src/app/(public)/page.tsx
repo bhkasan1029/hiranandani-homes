@@ -223,7 +223,7 @@ export default async function HomePage() {
           </div>
 
           {/* ── Right: stacked card scroll ── */}
-          <div className="w-full lg:w-[55%] hidden lg:block">
+          <div className="w-full lg:w-[55%]">
             <StackedCards
               cards={[
                 {

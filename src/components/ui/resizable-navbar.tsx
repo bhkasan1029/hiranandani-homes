@@ -80,6 +80,7 @@ export function Navbar({
               : mobileOpen
               ? "#F5F5F5"
               : "transparent",
+            border: scrolled ? "1px solid rgba(255,255,255,0.10)" : "none",
             boxShadow: active
               ? "0 8px 40px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.10)"
               : "none",
