@@ -88,6 +88,13 @@ export default function PropertyGallery({ images, title }: Props) {
   const [mobileExpandedIdx, setMobileExpandedIdx] = useState(0); // mobile lightbox index
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    setMobileIdx(idx);
+  }, []);
+
   if (images.length === 0) {
     return (
       <div className="h-[220px] sm:h-[320px] lg:h-[440px] bg-zinc-100 rounded-xl flex flex-col items-center justify-center gap-3">
@@ -105,13 +112,6 @@ export default function PropertyGallery({ images, title }: Props) {
     setMobileExpandedIdx(startIdx);
     setExpanded(true);
   }
-
-  const handleScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const idx = Math.round(el.scrollLeft / el.clientWidth);
-    setMobileIdx(idx);
-  }, []);
 
   const showDots = images.length <= 10;
 
