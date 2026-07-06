@@ -11,9 +11,6 @@ import {
   ListChecks,
   Zap,
   ScanEye,
-  Search,
-  Heart,
-  KeyRound,
   ArrowRight,
 } from "lucide-react";
 import StackedCards from "@/components/ui/stacked-cards";
