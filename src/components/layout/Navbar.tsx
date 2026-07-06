@@ -199,20 +199,20 @@ export default function SiteNavbar({ forceScrolled = false }: { forceScrolled?: 
                     Admin Panel
                   </MobileNavLink>
                 )}
-                <button
+                <MobileActionButton
                   onClick={() => { setMobileOpen(false); handleListProperty(); }}
-                  className="flex items-center gap-2 px-1 py-2.5 text-sm font-medium text-[#1A1A1A]"
+                  icon={<PlusSquare className="h-4 w-4" />}
+                  bordered
                 >
-                  <PlusSquare className="h-4 w-4" />
                   List a Property
-                </button>
-                <button
+                </MobileActionButton>
+                <MobileActionButton
                   onClick={() => { setMobileOpen(false); signOut({ callbackUrl: "/" }); }}
-                  className="flex items-center gap-2 px-1 py-2.5 text-sm font-medium text-red-500"
+                  icon={<LogOut className="h-4 w-4" />}
+                  danger
                 >
-                  <LogOut className="h-4 w-4" />
                   Sign Out
-                </button>
+                </MobileActionButton>
               </>
             ) : (
               <div className="flex flex-col gap-3 pt-3 mt-1">
@@ -266,5 +266,39 @@ function MobileNavLink({
     >
       {children}
     </Link>
+  );
+}
+
+/* ─── MobileActionButton helper ───────────────────────────────────────────── */
+function MobileActionButton({
+  onClick,
+  icon,
+  children,
+  bordered,
+  danger,
+}: {
+  onClick: () => void;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  bordered?: boolean;
+  danger?: boolean;
+}) {
+  const { scrolled } = useNavbar();
+  const color = danger
+    ? scrolled ? "rgba(255,120,120,1)" : "rgb(239,68,68)"
+    : scrolled ? "rgba(255,255,255,0.85)" : "#1A1A1A";
+  const borderColor = scrolled ? "rgba(255,255,255,0.08)" : "rgba(26,26,26,0.07)";
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-2 px-1 py-2.5 text-sm font-medium w-full text-left"
+      style={{
+        color,
+        borderBottom: bordered ? `1px solid ${borderColor}` : undefined,
+      }}
+    >
+      {icon}
+      {children}
+    </button>
   );
 }
