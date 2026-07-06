@@ -40,100 +40,74 @@ export default function PropertyCard({ property, variant = "grid" }: Props) {
 
   if (variant === "list") {
     return (
-      <Link href={`/listings/${property.id}`} className="block">
-        <div className="bg-white rounded-xl overflow-hidden flex flex-col sm:flex-row shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_6px_28px_rgba(0,0,0,0.09)] transition-shadow duration-200 border border-zinc-100">
+      <Link href={`/listings/${property.id}`} className="block group">
+        <div className="bg-white rounded-xl overflow-hidden flex flex-row shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.09)] transition-shadow duration-200 border border-zinc-100">
 
-          {/* Image */}
-          <div className="relative w-full sm:w-[220px] md:w-[260px] lg:w-[300px] h-48 sm:h-auto flex-shrink-0">
+          {/* Thumbnail — fixed small */}
+          <div className="relative w-[110px] sm:w-[160px] h-[90px] sm:h-[110px] flex-shrink-0 self-stretch">
             {primaryImage ? (
               <Image
                 src={primaryImage.url}
                 alt={property.title}
                 fill
                 className="object-cover"
-                sizes="(max-width: 640px) 100vw, 300px"
+                sizes="(max-width: 640px) 110px, 160px"
               />
             ) : (
-              <div className="w-full h-full bg-zinc-100 flex flex-col items-center justify-center gap-2">
-                <ImageOff className="w-6 h-6 text-zinc-300" />
-                <span className="text-xs text-zinc-400 font-medium">No photos</span>
+              <div className="w-full h-full bg-zinc-100 flex items-center justify-center">
+                <ImageOff className="w-5 h-5 text-zinc-300" />
               </div>
             )}
-
-            {/* Badges */}
-            <div className="absolute top-3 left-3 flex gap-1.5">
-              <span className="bg-zinc-900 text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                {LISTING_TYPE_LABELS[property.listingType] ?? property.listingType}
-              </span>
-              <span className="bg-white/85 backdrop-blur-md text-zinc-900 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                {PROPERTY_TYPE_LABELS[property.type] ?? property.type}
-              </span>
-            </div>
+            <span className="absolute top-2 left-2 bg-zinc-900 text-white px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest">
+              {LISTING_TYPE_LABELS[property.listingType] ?? property.listingType}
+            </span>
           </div>
 
-          {/* Info */}
-          <div className="flex flex-col flex-1 p-4 sm:p-5 min-w-0">
+          {/* Info — compact two-row layout */}
+          <div className="flex flex-col justify-center flex-1 px-3 sm:px-4 py-2.5 min-w-0 gap-1">
 
-            {/* Title */}
-            <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-zinc-900 leading-snug line-clamp-2 mb-1.5">
-              {property.title}
-            </h3>
+            {/* Row 1: title + price */}
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-sm sm:text-base font-bold tracking-tight text-zinc-900 leading-snug line-clamp-1 min-w-0">
+                {property.title}
+              </h3>
+              <span className="text-sm sm:text-base font-black text-zinc-900 leading-none shrink-0 whitespace-nowrap">
+                {formatPrice(property.price)}
+                {isRent && <span className="text-[11px] font-medium text-zinc-400 ml-0.5">/mo</span>}
+              </span>
+            </div>
 
-            {/* Location */}
-            <p className="flex items-center gap-1 text-zinc-500 text-xs sm:text-sm mb-3 truncate">
-              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {/* Row 2: location */}
+            <p className="flex items-center gap-1 text-zinc-400 text-xs truncate">
+              <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span className="truncate">
-                {property.building ? `${property.building}, ` : ""}
-                {property.locality}
+                {property.building ? `${property.building}, ` : ""}{property.locality}
               </span>
             </p>
 
-            {/* Stats row */}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-zinc-500 font-medium mb-auto">
+            {/* Row 3: stats chips */}
+            <div className="flex items-center gap-2 text-[11px] text-zinc-500 font-medium flex-wrap">
               {property.bedrooms && (
-                <span className="flex items-center gap-1">
-                  <BedDouble className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="flex items-center gap-0.5">
+                  <BedDouble className="w-3 h-3 flex-shrink-0" />
                   {property.bedrooms} BHK
                 </span>
               )}
-              <span className="flex items-center gap-1">
-                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                </svg>
-                {formatArea(property.areaSqft)}
-              </span>
-              <span className="flex items-center gap-1">
-                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                {FURNISHED_LABELS[property.furnished] ?? property.furnished}
+              <span className="text-zinc-300">·</span>
+              <span>{formatArea(property.areaSqft)}</span>
+              <span className="text-zinc-300">·</span>
+              <span>{FURNISHED_LABELS[property.furnished] ?? property.furnished}</span>
+              <span className="hidden sm:flex items-center gap-0.5 ml-auto text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                <span className="text-[10px] font-semibold">{PROPERTY_TYPE_LABELS[property.type] ?? property.type}</span>
+                <span className="ml-1">→</span>
               </span>
             </div>
 
-            {/* Price + deposit */}
-            <div className="flex items-end justify-between gap-2 mt-3 pt-3 border-t border-zinc-100 flex-wrap">
-              <div className="min-w-0">
-                <span className="text-sm sm:text-base md:text-lg font-black text-zinc-900 leading-none">
-                  {formatPrice(property.price)}
-                  {isRent && <span className="text-xs sm:text-sm font-medium text-zinc-400 ml-1">/mo</span>}
-                </span>
-                {isRent && property.deposit && (
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
-                    Deposit: {formatPrice(property.deposit)}
-                  </p>
-                )}
-              </div>
-              <span className="text-xs font-semibold text-zinc-400 bg-zinc-50 px-2.5 py-1 rounded-full border border-zinc-100 shrink-0">
-                View Details →
-              </span>
-            </div>
           </div>
         </div>
       </Link>
