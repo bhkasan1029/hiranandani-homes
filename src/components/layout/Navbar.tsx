@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/resizable-navbar";
 
 const navItems = [
-  { name: "Listings", link: "/listings" },
+  { name: "Explore Homes", link: "/listings" },
   { name: "How It Works", link: "/how-it-works" },
 ];
 

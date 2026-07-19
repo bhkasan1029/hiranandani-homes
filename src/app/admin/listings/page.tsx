@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatPrice, formatDate } from "@/lib/utils/formatters";
 import { PROPERTY_TYPE_LABELS, LISTING_TYPE_LABELS } from "@/lib/constants";
 import type { PropertyFilters } from "@/types/property";
+import ListingActions from "./ListingActions";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,7 @@ export default async function AdminListingsPage({ searchParams }: PageProps) {
     },
   });
 
-  const tabs = ["PENDING", "ACTIVE", "REJECTED", "DELETE_REQUESTED", "ALL"];
+  const tabs = ["PENDING", "ACTIVE", "INACTIVE", "REJECTED", "DELETE_REQUESTED", "ALL"];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -79,8 +80,8 @@ export default async function AdminListingsPage({ searchParams }: PageProps) {
           {/* Mobile cards */}
           <div className="sm:hidden space-y-3">
             {properties.map((p) => (
-              <Link key={p.id} href={`/admin/listings/${p.id}`} className="block">
-                <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm transition-shadow">
+              <div key={p.id} className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm transition-shadow">
+                <Link href={`/admin/listings/${p.id}`} className="block">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-sm font-medium text-gray-900 line-clamp-1">{p.title}</h3>
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0 ${STATUS_STYLES[p.status] ?? ""}`}>
@@ -95,8 +96,11 @@ export default async function AdminListingsPage({ searchParams }: PageProps) {
                     <span className="text-sm font-semibold text-gray-700">{formatPrice(p.price)}</span>
                     <span className="text-[10px] text-gray-400">{formatDate(p.createdAt)}</span>
                   </div>
+                </Link>
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <ListingActions propertyId={p.id} status={p.status} />
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 
@@ -113,6 +117,7 @@ export default async function AdminListingsPage({ searchParams }: PageProps) {
                     <th className="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Owner</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Submitted</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Actions</th>
                     <th className="px-4 py-3" />
                   </tr>
                 </thead>
@@ -134,6 +139,9 @@ export default async function AdminListingsPage({ searchParams }: PageProps) {
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[p.status] ?? ""}`}>
                           {p.status}
                         </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <ListingActions propertyId={p.id} status={p.status} />
                       </td>
                       <td className="px-4 py-3">
                         <Link

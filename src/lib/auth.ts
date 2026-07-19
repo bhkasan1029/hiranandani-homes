@@ -60,24 +60,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async jwt({ token, user, trigger }: { token: any; user: any; trigger?: string }) {
+    async jwt({ token, user }: { token: any; user: any; trigger?: string }) {
       if (user) {
         token.id = user.id as string;
-        // Always fetch fresh role from DB on sign-in — adapter may not return custom fields
-        const fresh = await prisma.user.findUnique({
-          where: { id: user.id as string },
-          select: { role: true, disabled: true },
-        });
-        token.role = fresh?.role ?? "USER";
-        if (fresh?.disabled) return null; // block disabled users
       }
-      // On session update (e.g. after becoming owner), refetch role from DB
-      if (trigger === "update" && token.id) {
+      // Always fetch fresh role from DB so role changes (e.g. promotion to
+      // ADMIN, demotion, disable) take effect without re-login
+      if (token.id) {
         const fresh = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true },
+          select: { role: true, disabled: true },
         });
-        if (fresh) token.role = fresh.role;
+        if (!fresh || fresh.disabled) return null; // block deleted/disabled users
+        token.role = fresh.role;
       }
       return token;
     },

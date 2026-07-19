@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
@@ -45,17 +45,7 @@ function LoginForm() {
     }
   };
 
-  // Auto-trigger Google if they last signed in that way
-  useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem("hp_last_provider") === "google") {
-      setGoogleLoading(true);
-      signIn("google", { callbackUrl });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleGoogle = async () => {
-    localStorage.setItem("hp_last_provider", "google");
     setGoogleLoading(true);
     await signIn("google", { callbackUrl });
   };

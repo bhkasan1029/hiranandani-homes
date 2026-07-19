@@ -4,8 +4,11 @@ import AdminShell from "./AdminShell";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session || !["ADMIN"].includes(session.user.role)) {
+  if (!session) {
     redirect("/login");
+  }
+  if (session.user.role !== "ADMIN") {
+    redirect("/");
   }
 
   return (

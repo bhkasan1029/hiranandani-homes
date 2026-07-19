@@ -1,15 +1,18 @@
 import { Suspense } from "react";
 import FilterPanel from "@/components/search/FilterPanel";
 import ListingsContent from "@/components/property/ListingsContent";
+import WelcomeTour from "@/components/tour/WelcomeTour";
 
 export default function ListingsPage() {
   return (
     <div className="pt-20 sm:pt-24 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <WelcomeTour />
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
 
         {/* Filter Sidebar */}
         <aside className="hidden lg:block w-64 shrink-0">
           <div
+            data-tour="filters"
             className="bg-white rounded-xl p-5 sticky top-24 h-[calc(100vh-7rem)] overflow-y-auto"
             style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.03)" }}
           >

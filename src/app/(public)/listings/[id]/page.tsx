@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import PropertyMapSection from "@/components/map/PropertyMapSection";
 import InquiryButton from "@/components/payment/InquiryButton";
 import PropertyGallery from "@/components/property/PropertyGallery";
+import { WhatsAppShareButton } from "@/components/property/WhatsAppShare";
 import {
   MapPin,
   BedDouble,
@@ -256,6 +257,25 @@ export default async function PropertyDetailPage({
                   userName={session?.user?.name ?? ""}
                   userEmail={session?.user?.email ?? ""}
                   autoOpen={resolvedSearch?.showInterest === "1" && !!session && !hasRegistered}
+                />
+              </div>
+
+              <div className="mt-3">
+                <WhatsAppShareButton
+                  property={{
+                    id: property.id,
+                    title: property.title,
+                    type: property.type,
+                    listingType: property.listingType,
+                    building: property.building,
+                    locality: property.locality,
+                    bedrooms: property.bedrooms,
+                    bathrooms: property.bathrooms,
+                    areaSqft: property.areaSqft,
+                    furnished: property.furnished,
+                    price: property.price,
+                    deposit: property.deposit,
+                  }}
                 />
               </div>
 

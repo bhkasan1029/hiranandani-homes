@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
 import {
   HIRANANDANI_LOCALITIES,
   PROPERTY_TYPE_LABELS,
@@ -10,37 +9,28 @@ import {
   PRICE_RANGES_SALE,
 } from "@/lib/constants";
 
-export default function FilterPanel() {
+// Filters apply instantly on change — no "Apply" button. Values live in the
+// URL so chips, results and the panel always stay in sync.
+export default function FilterPanel({ onClose }: { onClose?: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [listingType, setListingType] = useState(searchParams.get("listingType") || "SALE");
-  const [type, setType] = useState(searchParams.get("type") || "");
-  const [locality, setLocality] = useState(searchParams.get("locality") || "");
-  const [bedrooms, setBedrooms] = useState(searchParams.get("bedrooms") || "");
-  const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
-  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
-
-  useEffect(() => {
-    setListingType(searchParams.get("listingType") || "SALE");
-    setType(searchParams.get("type") || "");
-    setLocality(searchParams.get("locality") || "");
-    setBedrooms(searchParams.get("bedrooms") || "");
-    setMinPrice(searchParams.get("minPrice") || "");
-    setMaxPrice(searchParams.get("maxPrice") || "");
-  }, [searchParams]);
+  const listingType = searchParams.get("listingType") || "SALE";
+  const type = searchParams.get("type") || "";
+  const locality = searchParams.get("locality") || "";
+  const bedrooms = searchParams.get("bedrooms") || "";
+  const minPrice = searchParams.get("minPrice") || "";
+  const maxPrice = searchParams.get("maxPrice") || "";
 
   const priceRanges = listingType === "SALE" ? PRICE_RANGES_SALE : PRICE_RANGES_RENT;
 
-  function applySearch() {
-    const params = new URLSearchParams();
-    if (listingType) params.set("listingType", listingType);
-    if (type) params.set("type", type);
-    if (locality) params.set("locality", locality);
-    if (bedrooms) params.set("bedrooms", bedrooms);
-    if (minPrice) params.set("minPrice", minPrice);
-    if (maxPrice) params.set("maxPrice", maxPrice);
-    router.push(`/listings?${params.toString()}`);
+  function apply(changes: Record<string, string>) {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, val] of Object.entries(changes)) {
+      if (val) params.set(key, val);
+      else params.delete(key);
+    }
+    router.replace(`/listings?${params.toString()}`, { scroll: false });
   }
 
   return (
@@ -62,7 +52,7 @@ export default function FilterPanel() {
           {(["SALE", "RENT"] as const).map((t) => (
             <button
               key={t}
-              onClick={() => { setListingType(t); setMinPrice(""); setMaxPrice(""); }}
+              onClick={() => apply({ listingType: t, minPrice: "", maxPrice: "" })}
               className={`flex-1 py-1.5 text-xs rounded-lg transition-all ${
                 listingType === t
                   ? "bg-zinc-900 text-white font-bold"
@@ -83,7 +73,7 @@ export default function FilterPanel() {
         <div className="relative">
           <select
             value={type}
-            onChange={(e) => setType(e.target.value)}
+            onChange={(e) => apply({ type: e.target.value })}
             className="w-full appearance-none bg-[#f2f4f4] border-none rounded-lg px-3 py-2.5 text-sm text-zinc-900 font-medium cursor-pointer focus:outline-none focus:ring-0"
           >
             <option value="">All Types</option>
@@ -106,7 +96,7 @@ export default function FilterPanel() {
         <div className="relative">
           <select
             value={locality}
-            onChange={(e) => setLocality(e.target.value)}
+            onChange={(e) => apply({ locality: e.target.value })}
             className="w-full appearance-none bg-[#f2f4f4] border-none rounded-lg px-3 py-2.5 pr-10 text-sm text-zinc-900 font-medium cursor-pointer focus:outline-none focus:ring-0"
           >
             <option value="">All Localities</option>
@@ -133,7 +123,7 @@ export default function FilterPanel() {
           {BHK_OPTIONS.map((n) => (
             <button
               key={n}
-              onClick={() => setBedrooms(bedrooms === String(n) ? "" : String(n))}
+              onClick={() => apply({ bedrooms: bedrooms === String(n) ? "" : String(n) })}
               className={`px-3 py-1.5 rounded-full text-xs transition-all ${
                 bedrooms === String(n)
                   ? "bg-zinc-900 text-white font-bold"
@@ -155,17 +145,18 @@ export default function FilterPanel() {
           {priceRanges.map((range) => {
             const active =
               String(range.min) === minPrice &&
-              (range.max === Infinity || String(range.max) === maxPrice);
+              (range.max === Infinity ? !maxPrice : String(range.max) === maxPrice);
             return (
               <li
                 key={range.label}
                 className="flex items-center gap-2.5 cursor-pointer group"
                 onClick={() => {
-                  if (active) { setMinPrice(""); setMaxPrice(""); }
-                  else {
-                    setMinPrice(String(range.min));
-                    setMaxPrice(range.max === Infinity ? "" : String(range.max));
-                  }
+                  if (active) apply({ minPrice: "", maxPrice: "" });
+                  else
+                    apply({
+                      minPrice: String(range.min),
+                      maxPrice: range.max === Infinity ? "" : String(range.max),
+                    });
                 }}
               >
                 <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
@@ -188,13 +179,15 @@ export default function FilterPanel() {
         </ul>
       </div>
 
-      {/* Apply Search */}
-      <button
-        onClick={applySearch}
-        className="w-full py-3 bg-zinc-900 text-white rounded-xl font-bold tracking-tight hover:opacity-90 transition-all text-sm"
-      >
-        Apply Search
-      </button>
+      {/* Mobile sheet: filters are already applied — this just closes the sheet */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="w-full py-3 bg-zinc-900 text-white rounded-xl font-bold tracking-tight hover:opacity-90 transition-all text-sm lg:hidden"
+        >
+          View Results
+        </button>
+      )}
     </div>
   );
 }

@@ -36,6 +36,8 @@ import {
   LOCK_IN_OPTIONS,
 } from "@/lib/constants";
 import { propertyStep1Schema, propertyStep3Schema } from "@/lib/validations/property";
+import { WhatsAppShareModal } from "@/components/property/WhatsAppShare";
+import type { ShareableProperty } from "@/lib/utils/whatsapp";
 import {
   ChevronRight,
   ChevronLeft,
@@ -157,7 +159,7 @@ function Step1({
           {/* Basic Information */}
           <section className="bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
             <h3 className={sectionHeadCls}>Basic Information</h3>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
               {/* Property Type */}
               <div className="space-y-2">
@@ -204,7 +206,7 @@ function Step1({
               </div>
 
               {/* Property Title */}
-              <div className="col-span-2 space-y-2">
+              <div className="sm:col-span-2 space-y-2">
                 <label className="text-[12px] font-semibold text-gray-800">Property Title</label>
                 <input
                   {...register("title")}
@@ -215,7 +217,7 @@ function Step1({
               </div>
 
               {/* Description */}
-              <div className="col-span-2 space-y-2">
+              <div className="sm:col-span-2 space-y-2">
                 <label className="text-[12px] font-semibold text-gray-800">Description</label>
                 <textarea
                   {...register("description")}
@@ -235,7 +237,7 @@ function Step1({
               <h3 className={sectionHeadCls.replace("mb-8", "")}>Location Details</h3>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
               {/* Building Name */}
               <div className="space-y-2">
@@ -271,7 +273,7 @@ function Step1({
               </div>
 
               {/* Detailed Address */}
-              <div className="col-span-2 space-y-2">
+              <div className="sm:col-span-2 space-y-2">
                 <label className="text-[12px] font-semibold text-gray-800">Detailed Address</label>
                 <input
                   {...register("address")}
@@ -998,7 +1000,7 @@ function Step4({
         <h3 className="font-semibold text-gray-900">{step1.title}</h3>
         <p className="text-sm text-gray-600">{step1.description}</p>
 
-        <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mt-4">
           {rows.map(([label, value]) => (
             <div key={label} className="flex gap-2 text-sm">
               <span className="text-gray-500 min-w-[90px] shrink-0">{label}:</span>
@@ -1082,6 +1084,7 @@ export default function NewListingPage() {
     images: [],
     step3: {},
   });
+  const [shareProperty, setShareProperty] = useState<ShareableProperty | null>(null);
 
   // Guard: only OWNER, MANAGER, ADMIN may list properties
   if (session && !["OWNER", "ADMIN"].includes(session.user?.role ?? "")) {
@@ -1149,7 +1152,24 @@ export default function NewListingPage() {
       }
 
       toast.success("Listing submitted for review!");
-      router.push("/dashboard");
+
+      // Offer a ready-made WhatsApp message before leaving the page
+      const s1 = data.step1 as Step1Data;
+      const s3 = data.step3 as Step3Data;
+      setShareProperty({
+        id: property.id,
+        title: s1.title,
+        type: s1.type,
+        listingType: s1.listingType,
+        building: s1.building,
+        locality: s1.locality,
+        bedrooms: s1.bedrooms,
+        bathrooms: s1.bathrooms,
+        areaSqft: s1.areaSqft,
+        furnished: s1.furnished,
+        price: s3.price,
+        deposit: s3.deposit,
+      });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -1159,6 +1179,18 @@ export default function NewListingPage() {
 
   return (
     <div className="relative">
+
+      {/* ── Post-submit share popup ── */}
+      {shareProperty && (
+        <WhatsAppShareModal
+          open
+          onClose={() => router.push("/dashboard")}
+          property={shareProperty}
+          subtitle="Listing Submitted"
+          title="Share your property"
+          description="Want to copy a ready-made WhatsApp message for your listing? The link goes live as soon as your property is approved."
+        />
+      )}
 
       {/* ── Step 1: full two-column layout ── */}
       {step === 0 && (
@@ -1200,7 +1232,7 @@ export default function NewListingPage() {
 
       {/* ── Fixed footer (Step 1 only) ── */}
       {step === 0 && (
-        <footer className="fixed bottom-0 left-64 right-0 bg-[#f5f5f5]/90 backdrop-blur-xl border-t border-black/5 px-12 py-5 flex justify-between items-center z-50">
+        <footer className="fixed bottom-0 left-0 md:left-64 right-0 bg-[#f5f5f5]/90 backdrop-blur-xl border-t border-black/5 px-4 sm:px-12 py-4 sm:py-5 flex justify-between items-center gap-3 z-50">
           <div className="flex items-center gap-4">
             <div className="flex gap-1.5">
               {[0, 1, 2, 3].map((i) => (

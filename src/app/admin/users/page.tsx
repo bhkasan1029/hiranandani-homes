@@ -15,7 +15,7 @@ interface UserRow {
   disabled: boolean;
 }
 
-const ROLE_OPTIONS = ["USER", "OWNER"];
+const ROLE_OPTIONS = ["USER", "OWNER", "ADMIN"];
 
 type FilterTab = "all" | "owners" | "disabled";
 
@@ -35,6 +35,13 @@ export default function AdminUsersPage() {
   }, []);
 
   async function updateRole(userId: string, role: string) {
+    if (role === "ADMIN") {
+      const user = users.find((u) => u.id === userId);
+      const ok = window.confirm(
+        `Make ${user?.name ?? user?.email ?? "this user"} an Admin? They will get full access to the admin panel.`
+      );
+      if (!ok) return;
+    }
     setUpdating(userId);
     try {
       const res = await fetch(`/api/admin/users/${userId}/role`, {
@@ -135,8 +142,8 @@ export default function AdminUsersPage() {
             </div>
             <p className="text-[10px] text-gray-400 mb-3">Joined {formatDate(new Date(u.createdAt))}</p>
             <div className="flex items-center gap-2">
-              {["ADMIN"].includes(u.role) ? (
-                <span className="text-xs text-gray-400 italic">Protected</span>
+              {u.id === session?.user?.id ? (
+                <span className="text-xs text-gray-400 italic">You</span>
               ) : (
                 <>
                   <select
@@ -216,8 +223,8 @@ export default function AdminUsersPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 hidden lg:table-cell">
-                    {["ADMIN"].includes(u.role) ? (
-                      <span className="text-xs text-gray-400 italic">Protected</span>
+                    {u.id === session?.user?.id ? (
+                      <span className="text-xs text-gray-400 italic">You</span>
                     ) : (
                       <select
                         value={u.role}
@@ -232,7 +239,7 @@ export default function AdminUsersPage() {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    {!["ADMIN"].includes(u.role) && u.id !== session?.user?.id && (
+                    {u.id !== session?.user?.id && (
                       u.disabled ? (
                         <button
                           onClick={() => toggleDisabled(u.id, false)}

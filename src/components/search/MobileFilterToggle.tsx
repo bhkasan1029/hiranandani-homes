@@ -12,6 +12,7 @@ export default function MobileFilterToggle() {
       {/* Toggle button — only visible on mobile */}
       <button
         onClick={() => setOpen(true)}
+        data-tour="filters-mobile"
         className="lg:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white text-zinc-500 border border-[#e4e9ea] hover:bg-[#f2f4f4] transition-all"
         aria-label="Open filters"
       >
@@ -48,7 +49,7 @@ export default function MobileFilterToggle() {
         </div>
         {/* Scrollable content */}
         <div className="overflow-y-auto flex-1 px-5 py-4">
-          <FilterPanel />
+          <FilterPanel onClose={() => setOpen(false)} />
         </div>
       </div>
     </>

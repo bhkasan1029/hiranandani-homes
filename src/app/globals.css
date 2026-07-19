@@ -125,5 +125,15 @@
   }
   html {
     font-family: var(--font-sans), sans-serif;
+    /* Guard against accidental horizontal scroll on small screens
+       (WhatsApp/Instagram in-app browsers are strict about this).
+       `clip` preserves position:sticky, unlike `hidden`. */
+    overflow-x: hidden;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    overflow-x: hidden;
+    overflow-x: clip;
   }
 }

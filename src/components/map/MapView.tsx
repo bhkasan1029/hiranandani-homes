@@ -235,7 +235,7 @@ export default function MapView({ properties }: { properties: PropertyPin[] }) {
 
   if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
     return (
-      <div className="flex items-center justify-center h-[600px] bg-gray-50 rounded-xl border text-sm text-gray-400 gap-2">
+      <div className="flex items-center justify-center h-[65dvh] sm:h-[600px] bg-gray-50 rounded-xl border text-sm text-gray-400 gap-2">
         <MapPin className="h-4 w-4" />
         Map not available — add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       </div>
@@ -245,7 +245,7 @@ export default function MapView({ properties }: { properties: PropertyPin[] }) {
   return (
     <div
       ref={containerRef}
-      className="h-[600px] w-full rounded-xl overflow-hidden border border-gray-200"
+      className="h-[65dvh] sm:h-[600px] w-full rounded-xl overflow-hidden border border-gray-200"
     />
   );
 }

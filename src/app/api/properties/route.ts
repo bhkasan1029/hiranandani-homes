@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createPropertySchema } from "@/lib/validations/property";
 import { HIRANANDANI_LOCALITIES } from "@/lib/constants";
 import { stringifyAmenities } from "@/lib/utils/formatters";
+import { revalidatePath } from "next/cache";
 
 const PAGE_SIZE = 12;
 
@@ -55,6 +56,7 @@ export async function GET(req: NextRequest) {
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
   const furnished = searchParams.get("furnished");
+  const sort = searchParams.get("sort");
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
   const take = Math.min(50, Math.max(1, parseInt(searchParams.get("take") ?? String(PAGE_SIZE))));
   const skip = searchParams.has("skip") ? Math.max(0, parseInt(searchParams.get("skip")!)) : (page - 1) * take;
@@ -74,11 +76,17 @@ export async function GET(req: NextRequest) {
     }),
   };
 
+  const orderBy =
+    sort === "price_asc" ? { price: "asc" as const } :
+    sort === "price_desc" ? { price: "desc" as const } :
+    sort === "area_desc" ? { areaSqft: "desc" as const } :
+    { createdAt: "desc" as const };
+
   const [properties, total] = await Promise.all([
     prisma.property.findMany({
       where,
       select: PUBLIC_PROPERTY_SELECT,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       skip,
       take,
     }),
@@ -123,7 +131,8 @@ export async function POST(req: NextRequest) {
         deposit: deposit ?? null,
         lockInMonths: lockInMonths && lockInMonths > 0 ? lockInMonths : null,
         ownerId: session.user.id,
-        status: "PENDING",
+        // Admin listings skip the review queue — the admin is the reviewer
+        status: session.user.role === "ADMIN" ? "ACTIVE" : "PENDING",
         amenities: stringifyAmenities(rest.amenities ?? []),
       },
       select: { id: true, status: true },
@@ -133,6 +142,11 @@ export async function POST(req: NextRequest) {
     await prisma.priceHistory.create({
       data: { propertyId: property.id, price, source: "LISTING" },
     });
+
+    // Admin listings go live immediately — refresh the public pages
+    if (property.status === "ACTIVE") {
+      revalidatePath("/listings");
+    }
 
     return NextResponse.json({ property }, { status: 201 });
   } catch (err) {

@@ -18,8 +18,12 @@ export async function POST(
   const body = await req.json();
   const { role } = body as { role: string };
 
-  if (!role || !["USER", "OWNER"].includes(role)) {
-    return NextResponse.json({ error: "Invalid role. Must be USER or OWNER." }, { status: 400 });
+  if (!role || !["USER", "OWNER", "ADMIN"].includes(role)) {
+    return NextResponse.json({ error: "Invalid role. Must be USER, OWNER or ADMIN." }, { status: 400 });
+  }
+
+  if (id === session.user.id) {
+    return NextResponse.json({ error: "You cannot change your own role." }, { status: 400 });
   }
 
   const user = await prisma.user.findUnique({
@@ -33,7 +37,7 @@ export async function POST(
 
   const updated = await prisma.user.update({
     where: { id },
-    data: { role: role as "USER" | "OWNER" },
+    data: { role },
     select: { id: true, role: true, name: true, email: true },
   });
 

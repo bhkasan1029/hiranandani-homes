@@ -64,7 +64,7 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════
           HERO
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center px-5 sm:px-8 overflow-hidden">
+      <section className="relative min-h-dvh flex items-center px-5 sm:px-8 overflow-hidden">
 
         {/* Full-bleed background image */}
         <div className="absolute inset-0 z-0">

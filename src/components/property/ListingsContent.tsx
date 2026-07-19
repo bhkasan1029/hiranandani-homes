@@ -1,17 +1,25 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import { MapPin, SlidersHorizontal } from "lucide-react";
+import { MapPin, SlidersHorizontal, LayoutGrid, List, ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 import PropertyCard from "@/components/property/PropertyCard";
 import MobileFilterToggle from "@/components/search/MobileFilterToggle";
+import ActiveFilterChips from "@/components/search/ActiveFilterChips";
+
+const SORT_OPTIONS = [
+  { value: "", label: "Newest First" },
+  { value: "price_asc", label: "Price: Low to High" },
+  { value: "price_desc", label: "Price: High to Low" },
+  { value: "area_desc", label: "Largest Area" },
+];
 
 const MapView = dynamic(() => import("@/components/map/MapView"), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-[600px] bg-gray-50 rounded-xl border text-sm text-gray-400 gap-2">
+    <div className="flex items-center justify-center h-[65dvh] sm:h-[600px] bg-gray-50 rounded-xl border text-sm text-gray-400 gap-2">
       <MapPin className="h-4 w-4 animate-pulse" />
       Loading map…
     </div>
@@ -73,6 +81,7 @@ function SkeletonGrid({ isGrid }: { isGrid: boolean }) {
 }
 
 export default function ListingsContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [properties, setProperties] = useState<PropertyCardData[]>([]);
   const [total, setTotal] = useState(0);
@@ -135,6 +144,15 @@ export default function ListingsContent() {
     return `/listings?${params.toString()}`;
   }
 
+  const sort = searchParams.get("sort") ?? "";
+
+  function changeSort(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set("sort", value);
+    else params.delete("sort");
+    router.replace(`/listings?${params.toString()}`, { scroll: false });
+  }
+
   const hasMore = properties.length < total;
 
   return (
@@ -154,31 +172,57 @@ export default function ListingsContent() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3" data-tour="sort-views">
           <MobileFilterToggle />
-          {(["grid", "list"] as const).map((key) => (
-            <Link key={key} href={viewLink(key)}>
-              <button
-                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+
+          {/* Sort */}
+          <div className="relative">
+            <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none w-3.5 h-3.5 text-zinc-500" />
+            <select
+              value={sort}
+              onChange={(e) => changeSort(e.target.value)}
+              aria-label="Sort properties"
+              className="appearance-none bg-white border border-[#e4e9ea] rounded-full pl-9 pr-8 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-zinc-700 cursor-pointer hover:bg-[#f2f4f4] focus:outline-none transition-all"
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+            <svg className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none w-3.5 h-3.5 text-zinc-400"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          {/* View switch — labeled segmented control */}
+          <div className="flex bg-white border border-[#e4e9ea] rounded-full p-1">
+            {(
+              [
+                { key: "grid", label: "Grid", Icon: LayoutGrid },
+                { key: "list", label: "List", Icon: List },
+              ] as const
+            ).map(({ key, label, Icon }) => (
+              <Link
+                key={key}
+                href={viewLink(key)}
+                replace
+                title={`${label} view`}
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
                   view === key
-                    ? "bg-zinc-900 text-white shadow-lg"
-                    : "bg-white text-zinc-500 border border-[#e4e9ea] hover:bg-[#f2f4f4]"
+                    ? "bg-zinc-900 text-white shadow"
+                    : "text-zinc-500 hover:text-zinc-900"
                 }`}
               >
-                {key === "grid" ? (
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                  </svg>
-                )}
-              </button>
-            </Link>
-          ))}
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">{label}</span>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* Active filter chips */}
+      <ActiveFilterChips />
 
       {/* Content */}
       {loading ? (
@@ -201,8 +245,14 @@ export default function ListingsContent() {
       ) : (
         <>
           <div className={isGrid ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-stretch" : "flex flex-col gap-3 sm:gap-4"}>
-            {properties.map((p) => (
-              <PropertyCard key={p.id} property={p} variant={isGrid ? "grid" : "list"} />
+            {properties.map((p, i) => (
+              <div
+                key={p.id}
+                data-tour={i === 0 ? "property-card" : undefined}
+                className={isGrid ? "h-full" : undefined}
+              >
+                <PropertyCard property={p} variant={isGrid ? "grid" : "list"} />
+              </div>
             ))}
             {loadingMore &&
               Array.from({ length: PAGE_SIZE }).map((_, i) =>

@@ -7,7 +7,6 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const session = req.auth;
-  const role = session?.user?.role;
 
   // Require login for dashboard and admin
   if (
@@ -20,12 +19,9 @@ export default auth((req) => {
   // Dashboard: any logged-in user (USER sees interests, OWNER+ sees listings)
   // No role gate here — role-based content is handled inside the dashboard itself
 
-  // Admin: ADMIN only
-  if (pathname.startsWith("/admin")) {
-    if (!role || role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-  }
+  // Admin role is NOT checked here: the edge token can hold a stale role
+  // (e.g. right after a promotion). The admin layout and every /api/admin
+  // route verify role === "ADMIN" against a fresh DB read via auth().
 
   return NextResponse.next();
 });
