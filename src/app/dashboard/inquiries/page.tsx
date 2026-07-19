@@ -2,7 +2,13 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils/formatters";
+import { whatsAppContactUrl } from "@/lib/utils/whatsapp";
+import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { MessageSquare } from "lucide-react";
+
+function contactMessage(seekerName: string | null, propertyTitle: string): string {
+  return `Hi ${seekerName ?? "there"}, this is regarding your inquiry for "${propertyTitle}" on HiranandaniProperties. Happy to discuss the details!`;
+}
 
 const STATUS_STYLE: Record<string, string> = {
   PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -74,6 +80,17 @@ export default async function InquiriesPage() {
                   <p className="text-xs text-gray-600">{inquiry.seeker.email}</p>
                   {contactPhone && <p className="text-xs text-gray-500">{contactPhone}</p>}
                   <p className="text-xs text-gray-400">{formatDate(inquiry.createdAt)}</p>
+                  {contactPhone && (
+                    <a
+                      href={whatsAppContactUrl(contactPhone, contactMessage(inquiry.seeker.name, inquiry.property.title))}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-full bg-[#25D366] text-white text-xs font-medium hover:bg-[#1fb958] transition-colors"
+                    >
+                      <WhatsAppIcon className="h-3.5 w-3.5" />
+                      Chat on WhatsApp
+                    </a>
+                  )}
                 </div>
               );
             })}
@@ -89,6 +106,7 @@ export default async function InquiriesPage() {
                   <th className="text-left font-semibold text-gray-600 px-4 py-3">Contact</th>
                   <th className="text-left font-semibold text-gray-600 px-4 py-3">Status</th>
                   <th className="text-left font-semibold text-gray-600 px-4 py-3">Date</th>
+                  <th className="text-left font-semibold text-gray-600 px-4 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -112,6 +130,20 @@ export default async function InquiriesPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{formatDate(inquiry.createdAt)}</td>
+                      <td className="px-4 py-3">
+                        {contactPhone && (
+                          <a
+                            href={whatsAppContactUrl(contactPhone, contactMessage(inquiry.seeker.name, inquiry.property.title))}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Chat on WhatsApp"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#25D366] text-white text-xs font-medium hover:bg-[#1fb958] transition-colors whitespace-nowrap"
+                          >
+                            <WhatsAppIcon className="h-3.5 w-3.5" />
+                            WhatsApp
+                          </a>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}

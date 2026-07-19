@@ -55,3 +55,12 @@ export function buildWhatsAppMessage(p: ShareableProperty, propertyUrl: string):
 export function whatsAppShareUrl(message: string): string {
   return `https://wa.me/?text=${encodeURIComponent(message)}`;
 }
+
+/** Direct chat link to a phone number. Normalizes Indian numbers to E.164 (no +). */
+export function whatsAppContactUrl(phone: string, message?: string): string {
+  let digits = phone.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
+  if (digits.length === 10) digits = `91${digits}`;
+  const text = message ? `?text=${encodeURIComponent(message)}` : "";
+  return `https://wa.me/${digits}${text}`;
+}
