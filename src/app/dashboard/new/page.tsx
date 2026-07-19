@@ -37,6 +37,7 @@ import {
 } from "@/lib/constants";
 import { propertyStep1Schema, propertyStep3Schema } from "@/lib/validations/property";
 import { WhatsAppShareModal } from "@/components/property/WhatsAppShare";
+import NewListingTour from "@/components/tour/NewListingTour";
 import type { ShareableProperty } from "@/lib/utils/whatsapp";
 import {
   ChevronRight,
@@ -157,7 +158,7 @@ function Step1({
         <div className="col-span-12 lg:col-span-7 space-y-8">
 
           {/* Basic Information */}
-          <section className="bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+          <section data-tour="np-basic" className="bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
             <h3 className={sectionHeadCls}>Basic Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
@@ -328,7 +329,7 @@ function Step1({
         <div className="col-span-12 lg:col-span-5 space-y-8">
 
           {/* Configurations */}
-          <section className="bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+          <section data-tour="np-config" className="bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
             <h3 className={sectionHeadCls}>Configurations</h3>
             <div className="space-y-6">
 
@@ -477,7 +478,7 @@ function Step1({
           </section>
 
           {/* Amenities */}
-          <section className="bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+          <section data-tour="np-amenities" className="bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
             <h3 className={sectionHeadCls}>Amenities</h3>
             <div className="grid grid-cols-2 gap-1">
               {visibleAmenities.map((amenity) => {
@@ -1180,6 +1181,9 @@ export default function NewListingPage() {
   return (
     <div className="relative">
 
+      {/* ── First-visit walkthrough (targets live on step 1) ── */}
+      {step === 0 && <NewListingTour />}
+
       {/* ── Post-submit share popup ── */}
       {shareProperty && (
         <WhatsAppShareModal
@@ -1232,7 +1236,7 @@ export default function NewListingPage() {
 
       {/* ── Fixed footer (Step 1 only) ── */}
       {step === 0 && (
-        <footer className="fixed bottom-0 left-0 md:left-64 right-0 bg-[#f5f5f5]/90 backdrop-blur-xl border-t border-black/5 px-4 sm:px-12 py-4 sm:py-5 flex justify-between items-center gap-3 z-50">
+        <footer data-tour="np-footer" className="fixed bottom-0 left-0 md:left-64 right-0 bg-[#f5f5f5]/90 backdrop-blur-xl border-t border-black/5 px-4 sm:px-12 py-4 sm:py-5 flex justify-between items-center gap-3 z-50">
           <div className="flex items-center gap-4">
             <div className="flex gap-1.5">
               {[0, 1, 2, 3].map((i) => (

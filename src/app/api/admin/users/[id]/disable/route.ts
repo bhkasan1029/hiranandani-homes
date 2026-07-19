@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth, invalidateUserAccess } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
@@ -29,6 +29,8 @@ export async function PATCH(
     data: { disabled: Boolean(disabled) },
     select: { id: true, disabled: true, name: true },
   });
+
+  invalidateUserAccess(id);
 
   return NextResponse.json({ user });
 }

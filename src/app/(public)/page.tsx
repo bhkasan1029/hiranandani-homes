@@ -1,6 +1,8 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
+import Image from "next/image";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import PropertyCard from "@/components/property/PropertyCard";
 import {
@@ -18,7 +20,9 @@ import ListPropertyCTA from "@/components/property/ListPropertyCTA";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
 import ProcessSection from "@/components/ui/ProcessSection";
 
-async function getHomeData() {
+// Cached across requests — the page still renders per request (session in the
+// root layout), but these 4 DB queries only run once a minute
+const getHomeData = unstable_cache(async () => {
   const [featured, stats] = await Promise.all([
     prisma.property.findMany({
       where: { status: "ACTIVE" },
@@ -51,7 +55,7 @@ async function getHomeData() {
   ]);
 
   return { featured, stats };
-}
+}, ["home-data"], { revalidate: 60 });
 
 export default async function HomePage() {
   const { featured, stats } = await getHomeData();
@@ -68,10 +72,13 @@ export default async function HomePage() {
 
         {/* Full-bleed background image */}
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?w=1920&auto=format&fit=crop&q=80"
             alt="Hiranandani Estate architecture"
-            className="w-full h-full object-cover object-center"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
           />
           {/* Dark overlay — full bleed */}
           <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.80)" }} />

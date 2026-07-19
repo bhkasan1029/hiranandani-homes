@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth, invalidateUserAccess } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(
@@ -40,6 +40,8 @@ export async function POST(
     data: { role },
     select: { id: true, role: true, name: true, email: true },
   });
+
+  invalidateUserAccess(id);
 
   return NextResponse.json({ user: updated });
 }
