@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Info } from "lucide-react";
 
 const STORAGE_KEY = "hh_disclaimer_ack";
@@ -46,6 +47,14 @@ export default function DisclaimerPopup() {
           the Hiranandani Group</b> or any of its companies. The name
           &ldquo;Hiranandani&rdquo; is used solely to describe the locality in
           which the listed properties are situated.
+        </p>
+
+        <p className="text-[12px] text-[#1A1A1A]/40 mt-3">
+          See our{" "}
+          <Link href="/terms" className="underline underline-offset-2 hover:text-[#1A1A1A]">
+            Terms &amp; Conditions
+          </Link>{" "}
+          for details.
         </p>
 
         <button

@@ -61,6 +61,7 @@ export default function Footer() {
                   { href: "/how-it-works",    label: "How It Works" },
                   { href: "/dashboard/new",   label: "List Property" },
                   { href: "/listings",        label: "All Listings" },
+                  { href: "/terms",           label: "Terms & Conditions" },
                 ].map(({ href, label }) => (
                   <li key={href}>
                     <Link
@@ -93,6 +94,9 @@ export default function Footer() {
           </p>
           <p className="text-[10px] sm:text-xs text-white/25">
             Zero Brokerage
+          </p>
+          <p className="text-[10px] sm:text-xs text-white/40">
+            Powered by <span className="font-semibold text-white/60">ByteLights</span>
           </p>
         </div>
 

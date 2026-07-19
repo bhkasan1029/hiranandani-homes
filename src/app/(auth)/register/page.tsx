@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { registerSchema, type RegisterInput } from "@/lib/validations/user";
+import PhoneInput from "@/components/ui/PhoneInput";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -20,6 +21,7 @@ export default function RegisterPage() {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema) });
@@ -120,11 +122,18 @@ export default function RegisterPage() {
           <Label htmlFor="phone" className="text-[#1A1A1A] font-medium">
             Mobile Number <span className="text-gray-400 font-normal">(optional)</span>
           </Label>
-          <Input
-            id="phone"
-            placeholder="9876543210"
-            {...register("phone")}
-            className={`bg-white border-gray-200 focus:border-[#1A1A1A] focus:ring-[#1A1A1A]/20 ${errors.phone ? "border-red-500" : ""}`}
+          <Controller
+            control={control}
+            name="phone"
+            defaultValue=""
+            render={({ field }) => (
+              <PhoneInput
+                id="phone"
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                error={!!errors.phone}
+              />
+            )}
           />
           {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
         </div>

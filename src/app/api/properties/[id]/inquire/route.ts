@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { validatePhone } from "@/lib/validations/phone";
 
 export async function POST(
   req: NextRequest,
@@ -15,7 +16,11 @@ export async function POST(
   const seekerId = session.user.id;
 
   const body = await req.json().catch(() => ({}));
-  const phone: string | undefined = typeof body?.phone === "string" ? body.phone.trim() : undefined;
+  const phone: string = typeof body?.phone === "string" ? body.phone.trim() : "";
+  const phoneError = validatePhone(phone);
+  if (phoneError) {
+    return NextResponse.json({ error: phoneError }, { status: 400 });
+  }
 
   const property = await prisma.property.findUnique({
     where: { id: propertyId, status: "ACTIVE" },
@@ -39,7 +44,7 @@ export async function POST(
 
   const [inquiry] = await prisma.$transaction([
     prisma.inquiry.create({
-      data: { propertyId, seekerId, status: "PENDING", phone: phone ?? null },
+      data: { propertyId, seekerId, status: "PENDING", phone },
     }),
     // backfill user phone if not set
     ...(phone

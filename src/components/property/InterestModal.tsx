@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import PhoneInput from "@/components/ui/PhoneInput";
+import { validatePhone } from "@/lib/validations/phone";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/ui/Modal";
 
@@ -24,13 +26,6 @@ export default function InterestModal({
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  function validatePhone(value: string) {
-    const trimmed = value.trim();
-    if (!trimmed) return "Phone number is required";
-    if (!/^[6-9]\d{9}$/.test(trimmed)) return "Enter a valid 10-digit Indian mobile number";
-    return "";
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -103,15 +98,11 @@ export default function InterestModal({
               (required)
             </span>
           </label>
-          <input
-            type="tel"
+          <PhoneInput
             value={phone}
-            onChange={(e) => { setPhone(e.target.value); setPhoneError(""); }}
-            placeholder="98765 43210"
+            onChange={(v) => { setPhone(v); setPhoneError(""); }}
+            error={!!phoneError}
             autoFocus
-            className={`w-full border bg-white rounded-sm px-3.5 py-3 text-sm text-[#0B0B0C] placeholder:text-[#1A1A1A]/30 outline-none transition-colors ${
-              phoneError ? "border-red-400 focus:border-red-500" : "border-gray-200 focus:border-[#0B0B0C]/40"
-            }`}
           />
           {phoneError && (
             <p className="text-xs text-red-500 mt-1">{phoneError}</p>
