@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import PropertyMapSection from "@/components/map/PropertyMapSection";
@@ -35,7 +36,8 @@ import type { Metadata } from "next";
 
 export const revalidate = 3600;
 
-async function getProperty(id: string) {
+// cache() dedupes the query between generateMetadata and the page render
+const getProperty = cache(async (id: string) => {
   return prisma.property.findUnique({
     where: { id, status: "ACTIVE" },
     select: {
@@ -73,7 +75,7 @@ async function getProperty(id: string) {
       owner: { select: { id: true, name: true, image: true } },
     },
   });
-}
+});
 
 export async function generateMetadata({
   params,
@@ -141,6 +143,11 @@ export default async function PropertyDetailPage({
   const [property, session] = await Promise.all([getProperty(id), auth()]);
 
   if (!property) notFound();
+
+  // Count the view for analytics (never block the page on failure)
+  await prisma.property
+    .update({ where: { id }, data: { views: { increment: 1 } } })
+    .catch(() => {});
 
   const isRent = property.listingType === "RENT";
 

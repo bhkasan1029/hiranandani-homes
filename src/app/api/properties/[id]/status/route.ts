@@ -33,7 +33,7 @@ export async function PATCH(
   // Fetch property and check ownership
   const property = await prisma.property.findUnique({
     where: { id: propertyId },
-    select: { id: true, ownerId: true, status: true, title: true },
+    select: { id: true, ownerId: true, status: true, title: true, activatedAt: true },
   });
 
   if (!property) {
@@ -94,7 +94,10 @@ export async function PATCH(
   // Update property status
   await prisma.property.update({
     where: { id: propertyId },
-    data: { status },
+    data:
+      status === "INACTIVE"
+        ? { status, closedAt: new Date() }
+        : { status, closedAt: null, activatedAt: property.activatedAt ?? new Date() },
   });
 
   return NextResponse.json({ success: true, status });

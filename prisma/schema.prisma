@@ -86,6 +86,9 @@ model Property {
   rentNegotiable   Boolean             @default(false)
   lockInMonths     Int?
   lockInNegotiable Boolean             @default(false)
+  views            Int                 @default(0)
+  activatedAt      DateTime?
+  closedAt         DateTime?
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @updatedAt
   verifications    AdminVerification[]

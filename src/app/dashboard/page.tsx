@@ -33,6 +33,8 @@ export default async function DashboardPage() {
       rentNegotiable: true,
       lockInMonths: true,
       createdAt: true,
+      activatedAt: true,
+      closedAt: true,
       images: {
         select: { url: true, isPrimary: true },
         orderBy: { isPrimary: "desc" },

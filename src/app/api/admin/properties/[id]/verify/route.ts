@@ -35,6 +35,7 @@ export async function POST(
     select: {
       id: true,
       title: true,
+      activatedAt: true,
       owner: { select: { email: true, name: true } },
     },
   });
@@ -48,7 +49,10 @@ export async function POST(
   await prisma.$transaction([
     prisma.property.update({
       where: { id },
-      data: { status: newStatus },
+      data:
+        newStatus === "ACTIVE"
+          ? { status: newStatus, activatedAt: property.activatedAt ?? new Date(), closedAt: null }
+          : { status: newStatus },
     }),
     prisma.adminVerification.create({
       data: {

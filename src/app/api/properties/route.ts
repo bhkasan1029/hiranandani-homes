@@ -133,6 +133,7 @@ export async function POST(req: NextRequest) {
         ownerId: session.user.id,
         // Admin listings skip the review queue — the admin is the reviewer
         status: session.user.role === "ADMIN" ? "ACTIVE" : "PENDING",
+        ...(session.user.role === "ADMIN" && { activatedAt: new Date() }),
         amenities: stringifyAmenities(rest.amenities ?? []),
       },
       select: { id: true, status: true },

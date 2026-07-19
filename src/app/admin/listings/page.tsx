@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { formatPrice, formatDate } from "@/lib/utils/formatters";
+import { formatPrice, formatDate, turnaroundDays } from "@/lib/utils/formatters";
 import { PROPERTY_TYPE_LABELS, LISTING_TYPE_LABELS } from "@/lib/constants";
 import type { PropertyFilters } from "@/types/property";
 import ListingActions from "./ListingActions";
@@ -44,6 +44,9 @@ export default async function AdminListingsPage({ searchParams }: PageProps) {
       price: true,
       status: true,
       createdAt: true,
+      activatedAt: true,
+      closedAt: true,
+      views: true,
       owner: { select: { name: true } },
     },
   });
@@ -91,7 +94,11 @@ export default async function AdminListingsPage({ searchParams }: PageProps) {
                   <p className="text-xs text-gray-500 mb-1.5">
                     {PROPERTY_TYPE_LABELS[p.type] ?? p.type} · {LISTING_TYPE_LABELS[p.listingType] ?? p.listingType}
                   </p>
-                  <p className="text-xs text-gray-400 mb-2">{p.locality} · {p.owner.name ?? "—"}</p>
+                  <p className="text-xs text-gray-400 mb-2">
+                    {p.locality} · {p.owner.name ?? "—"}
+                    {p.status === "ACTIVE" && turnaroundDays(p.activatedAt) !== null && ` · Live ${turnaroundDays(p.activatedAt)}d`}
+                    {p.closedAt && turnaroundDays(p.activatedAt, p.closedAt) !== null && ` · Closed in ${turnaroundDays(p.activatedAt, p.closedAt)}d`}
+                  </p>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-gray-700">{formatPrice(p.price)}</span>
                     <span className="text-[10px] text-gray-400">{formatDate(p.createdAt)}</span>
@@ -116,6 +123,7 @@ export default async function AdminListingsPage({ searchParams }: PageProps) {
                     <th className="text-left px-4 py-3 font-medium text-gray-600">Price</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Owner</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Submitted</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600 hidden xl:table-cell">Turnaround</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600">Actions</th>
                     <th className="px-4 py-3" />
@@ -135,6 +143,13 @@ export default async function AdminListingsPage({ searchParams }: PageProps) {
                       <td className="px-4 py-3 text-gray-700">{formatPrice(p.price)}</td>
                       <td className="px-4 py-3 text-gray-500 hidden lg:table-cell">{p.owner.name ?? "—"}</td>
                       <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{formatDate(p.createdAt)}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500 hidden xl:table-cell whitespace-nowrap">
+                        {p.status === "ACTIVE" && turnaroundDays(p.activatedAt) !== null
+                          ? `Live ${turnaroundDays(p.activatedAt)}d`
+                          : p.closedAt && turnaroundDays(p.activatedAt, p.closedAt) !== null
+                          ? `Closed in ${turnaroundDays(p.activatedAt, p.closedAt)}d`
+                          : "—"}
+                      </td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[p.status] ?? ""}`}>
                           {p.status}

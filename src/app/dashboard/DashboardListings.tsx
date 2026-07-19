@@ -14,7 +14,7 @@ import {
   PROPERTY_TYPE_LABELS,
   LISTING_TYPE_LABELS,
 } from "@/lib/constants";
-import { formatPrice, formatDate } from "@/lib/utils/formatters";
+import { turnaroundDays, formatPrice, formatDate } from "@/lib/utils/formatters";
 import { Building2, PlusCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Modal from "@/components/ui/Modal";
@@ -39,6 +39,8 @@ interface PropertyWithCount {
   rentNegotiable: boolean;
   lockInMonths: number | null;
   createdAt: Date;
+  activatedAt: Date | null;
+  closedAt: Date | null;
   images: PropertyImage[];
   _count: { inquiries: number };
 }
@@ -263,6 +265,16 @@ export default function DashboardListings({
                   {property.lockInMonths && property.lockInMonths > 0 && (
                     <span className="text-xs text-gray-400">
                       Lock-in: {property.lockInMonths}m
+                    </span>
+                  )}
+                  {property.status === "ACTIVE" && turnaroundDays(property.activatedAt) !== null && (
+                    <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200">
+                      Live for {turnaroundDays(property.activatedAt)}d
+                    </span>
+                  )}
+                  {property.status === "INACTIVE" && turnaroundDays(property.activatedAt, property.closedAt) !== null && (
+                    <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                      Closed in {turnaroundDays(property.activatedAt, property.closedAt)}d
                     </span>
                   )}
                 </div>

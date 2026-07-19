@@ -44,3 +44,14 @@ export function slugify(text: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 }
+
+/** Whole days from `start` to `end` (or now). Null when start is missing. */
+export function turnaroundDays(
+  start: Date | string | null | undefined,
+  end?: Date | string | null
+): number | null {
+  if (!start) return null;
+  const s = new Date(start).getTime();
+  const e = end ? new Date(end).getTime() : Date.now();
+  return Math.max(0, Math.round((e - s) / 86_400_000));
+}

@@ -24,14 +24,21 @@ export async function PATCH(
 
   const property = await prisma.property.findUnique({
     where: { id },
-    select: { id: true, status: true },
+    select: { id: true, status: true, activatedAt: true },
   });
   if (!property) {
     return NextResponse.json({ error: "Property not found" }, { status: 404 });
   }
 
+  const timestamps =
+    status === "ACTIVE"
+      ? { activatedAt: property.activatedAt ?? new Date(), closedAt: null }
+      : status === "INACTIVE" && property.status === "ACTIVE"
+      ? { closedAt: new Date() }
+      : {};
+
   await prisma.$transaction([
-    prisma.property.update({ where: { id }, data: { status } }),
+    prisma.property.update({ where: { id }, data: { status, ...timestamps } }),
     prisma.adminVerification.create({
       data: {
         propertyId: id,

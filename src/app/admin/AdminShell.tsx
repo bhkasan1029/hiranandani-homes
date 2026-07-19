@@ -13,10 +13,12 @@ import {
   MessageSquare,
   Menu,
   X,
+  BarChart3,
 } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/listings", label: "Listings Queue", icon: ListChecks },
   { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare },
   { href: "/admin/users", label: "Users", icon: Users },
