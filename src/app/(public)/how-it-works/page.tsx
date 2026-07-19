@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "How It Works | HiranandaniProperties",
   description:
-    "We replaced traditional brokers with a simple, transparent process. Completely free. Direct access. Zero commissions.",
+    "A simple, transparent process — completely free, with direct owner access and zero commissions.",
 };
 
 /* ─── tiny reusable pill ───────────────────────────────────────────────────── */
@@ -41,7 +41,7 @@ export default function HowItWorksPage() {
           </h1>
 
           <p className="text-[#1A1A1A]/55 text-base sm:text-lg md:text-xl max-w-2xl font-medium leading-relaxed mb-12">
-            We replaced traditional brokers with a simple, transparent process.
+            A simple, transparent process — direct owner access, zero commissions.
             Completely free. Direct access. Zero commissions.
           </p>
 
@@ -176,9 +176,9 @@ export default function HowItWorksPage() {
               Connect Directly with the Owner
             </h2>
             <p className="text-[#1A1A1A]/55 text-lg leading-relaxed">
-              We provide you with the owner&apos;s direct contact details. No
-              middlemen, no scripted conversations, and absolutely no commission
-              pressure. Negotiate at your own pace.
+              We provide you with the owner&apos;s direct contact details. Honest,
+              direct conversations with absolutely no commission pressure.
+              Negotiate at your own pace.
             </p>
             {/* Owner card */}
             <div
@@ -221,11 +221,11 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ── WHY NO BROKER ─────────────────────────────────────────────────── */}
+      {/* ── WHY ZERO BROKERAGE ─────────────────────────────────────────────────── */}
       <section className="bg-[#111111] py-24 sm:py-32 px-6 sm:px-8">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-5xl sm:text-6xl font-extrabold tracking-tighter text-white mb-16 sm:mb-20">
-            Why No Broker?
+            Why Zero Brokerage?
           </h2>
           <div className="grid sm:grid-cols-2 gap-6 lg:gap-8">
             {[
@@ -234,14 +234,14 @@ export default function HowItWorksPage() {
                 iconBg: "rgba(52,211,153,0.15)",
                 iconColor: "#34D399",
                 title: "You save lakhs",
-                desc: "Traditional brokers charge 1–2% commission on the total property value. On a 2 Cr apartment, that's up to ₹4 Lakhs. We believe that money belongs in your new home, not in a broker's pocket.",
+                desc: "Property deals typically involve a 1–2% commission on the total value. On a 2 Cr apartment, that's up to ₹4 Lakhs. With us, that money stays with you — in your new home.",
               },
               {
                 icon: ShieldCheck,
                 iconBg: "rgba(96,165,250,0.15)",
                 iconColor: "#60A5FA",
                 title: "We verify, you decide",
-                desc: "We use technology to verify listings and owners, removing the need for a middleman to 'introduce' you. Our platform gives you the power to find, inspect, and buy on your own terms.",
+                desc: "We use technology to verify listings and owners, so you can connect with confidence. Our platform gives you the power to find, inspect, and buy on your own terms.",
               },
             ].map(({ icon: Icon, iconBg, iconColor, title, desc }) => (
               <div

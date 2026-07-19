@@ -29,11 +29,23 @@ export default function GuidedTour({
   const [step, setStep] = useState<number | null>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
-  // Show once, shortly after first landing
+  // Show once, shortly after first landing. If the site disclaimer hasn't been
+  // acknowledged yet, wait for it so the two popups don't stack.
   useEffect(() => {
     if (localStorage.getItem(storageKey)) return;
-    const t = setTimeout(() => setStep(0), startDelay);
-    return () => clearTimeout(t);
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const start = () => {
+      t = setTimeout(() => setStep(0), startDelay);
+    };
+    if (localStorage.getItem("hh_disclaimer_ack")) {
+      start();
+    } else {
+      window.addEventListener("hh:disclaimer-ack", start, { once: true });
+    }
+    return () => {
+      window.removeEventListener("hh:disclaimer-ack", start);
+      if (t) clearTimeout(t);
+    };
   }, [storageKey, startDelay]);
 
   const measure = useCallback(() => {

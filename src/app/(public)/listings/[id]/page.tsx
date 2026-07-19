@@ -287,7 +287,7 @@ export default async function PropertyDetailPage({
               </div>
 
               <p className="text-[10px] text-center text-[#1A1A1A]/40 mt-4 leading-relaxed tracking-wide">
-                No hidden charges &bull; 100% Verified Property
+                100% Verified Property
               </p>
             </div>
           </div>

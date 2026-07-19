@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { auth } from "@/lib/auth";
 import SessionProvider from "@/components/layout/SessionProvider";
+import DisclaimerPopup from "@/components/layout/DisclaimerPopup";
 import WarmDB from "@/components/WarmDB";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -82,6 +83,7 @@ export default async function RootLayout({
         </Script>
         <SessionProvider session={session}>
           <WarmDB />
+          <DisclaimerPopup />
           {children}
           <Toaster richColors position="top-right" />
         </SessionProvider>

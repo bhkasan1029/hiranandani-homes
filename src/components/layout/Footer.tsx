@@ -19,7 +19,7 @@ export default function Footer() {
             </Link>
             <p className="text-white/40 text-xs sm:text-sm leading-relaxed max-w-xs">
               Exclusively serving Hiranandani Estate, Thane. Completely free.
-              Zero brokerage, no middlemen.
+              Zero brokerage, direct owner connect.
             </p>
           </div>
 
@@ -77,13 +77,22 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Independent-platform disclaimer */}
+        <p className="text-[10px] sm:text-xs text-white/25 leading-relaxed mt-8 sm:mt-14 max-w-3xl">
+          Disclaimer: HiranandaniProperties.in is an independent property
+          listing platform and is not affiliated with, endorsed by, or
+          connected to the Hiranandani Group or any of its companies. The name
+          &ldquo;Hiranandani&rdquo; refers solely to the Hiranandani Estate
+          locality in Thane where the listed properties are situated.
+        </p>
+
         {/* Bottom bar */}
-        <div className="border-t border-white/8 mt-8 sm:mt-14 pt-5 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-3">
+        <div className="border-t border-white/8 mt-4 sm:mt-6 pt-5 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-3">
           <p className="text-[10px] sm:text-xs text-white/25">
             © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
           </p>
           <p className="text-[10px] sm:text-xs text-white/25">
-            Zero Broker Commission
+            Zero Brokerage
           </p>
         </div>
 

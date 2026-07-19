@@ -122,7 +122,7 @@ export default async function HomePage() {
             {/* Sub-copy */}
             <p className="text-base sm:text-lg md:text-xl text-white/70 max-w-xl leading-relaxed mb-8 sm:mb-10">
               Browse verified listings, register interest for free, and connect
-              directly with owners. No broker fees. No commissions. Completely free.
+              directly with owners. No commissions. Completely free.
             </p>
 
             {/* CTA */}
@@ -157,8 +157,8 @@ export default async function HomePage() {
             },
             {
               icon: Ban,
-              title: "No Brokers. Ever.",
-              desc: "We strictly prohibit agents, ensuring you never pay a rupee in brokerage or commissions.",
+              title: "Zero Brokerage.",
+              desc: "Deal directly with verified owners — you never pay a rupee in brokerage or commissions.",
             },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="bg-[#1c1c1c] p-7 sm:p-10 rounded-xl">
@@ -211,7 +211,7 @@ export default async function HomePage() {
                 { icon: PiggyBank, title: "Completely Free", desc: "Zero subscription fees or platform costs for tenants and buyers." },
                 { icon: ListChecks, title: "Verified Listings", desc: "Say goodbye to bait-and-switch. Every photo and detail is real." },
                 { icon: Zap, title: "Instant Access", desc: "Direct contact lines with owners for immediate viewings." },
-                { icon: ScanEye, title: "Price Transparency", desc: "View the true market rates without agent markups." },
+                { icon: ScanEye, title: "Price Transparency", desc: "View true market rates with complete price history." },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="flex gap-4 sm:gap-6">
                   <div
@@ -247,13 +247,13 @@ export default async function HomePage() {
                 },
                 {
                   label: "Direct Access",
-                  title: "Owner Contact.\nNo Middlemen.",
+                  title: "Owner Contact.\nDirect Connect.",
                   description:
                     "Connect directly with property owners for immediate viewings and honest conversations about your future home.",
                 },
                 {
                   label: "Market Insight",
-                  title: "True Prices.\nNo Agent Markups.",
+                  title: "True Prices.\nFull Transparency.",
                   description:
                     "View real market rates with full price history so you can make informed decisions without inflated numbers.",
                 },
@@ -261,7 +261,7 @@ export default async function HomePage() {
                   label: "Always Free",
                   title: "No Fees.\nNo Subscriptions.",
                   description:
-                    "Our platform is completely free for tenants and buyers. No hidden charges, no platform costs, no surprises.",
+                    "Our platform is completely free for tenants and buyers. No platform costs, no surprises.",
                 },
               ]}
             />
