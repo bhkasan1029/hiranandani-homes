@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
@@ -6,6 +6,10 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/lib/validations/user";
 import { authConfig } from "@/lib/auth.config";
+
+class EmailNotVerifiedError extends CredentialsSignin {
+  code = "email_not_verified";
+}
 
 // Augment NextAuth types to include our custom fields
 declare module "next-auth" {
@@ -80,6 +84,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!valid) return null;
 
         if (user.disabled) return null;
+
+        // Credentials accounts must have a verified email
+        if (!user.emailVerified) throw new EmailNotVerifiedError();
 
         return user;
       },

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { validatePhone } from "@/lib/validations/phone";
+import { newInquiryEmail } from "@/lib/email/templates";
+import { Resend } from "resend";
+
+const getResend = () => new Resend(process.env.RESEND_API_KEY!);
 
 export async function POST(
   req: NextRequest,
@@ -24,7 +28,12 @@ export async function POST(
 
   const property = await prisma.property.findUnique({
     where: { id: propertyId, status: "ACTIVE" },
-    select: { id: true, ownerId: true },
+    select: {
+      id: true,
+      ownerId: true,
+      title: true,
+      owner: { select: { name: true, email: true } },
+    },
   });
   if (!property) {
     return NextResponse.json({ error: "Property not found" }, { status: 404 });
@@ -56,6 +65,27 @@ export async function POST(
         ]
       : []),
   ]);
+
+  // Notify the owner about the new lead (never fail the inquiry on email issues)
+  if (property.owner.email) {
+    try {
+      const { subject, html } = newInquiryEmail({
+        ownerName: property.owner.name,
+        seekerName: session.user.name ?? null,
+        seekerPhone: phone,
+        propertyTitle: property.title,
+        baseUrl: process.env.NEXTAUTH_URL ?? "https://www.hiranandaniproperties.in",
+      });
+      await getResend().emails.send({
+        from: "HiranandaniProperties <noreply@hiranandaniproperties.in>",
+        to: property.owner.email,
+        subject,
+        html,
+      });
+    } catch (emailErr) {
+      console.error("Lead notification email failed:", emailErr);
+    }
+  }
 
   return NextResponse.json({ success: true, inquiryId: inquiry.id });
 }

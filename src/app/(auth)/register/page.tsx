@@ -18,6 +18,9 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [pendingCreds, setPendingCreds] = useState<{ email: string; password: string } | null>(null);
+  const [otp, setOtp] = useState("");
+  const [resending, setResending] = useState(false);
 
   const {
     register,
@@ -41,16 +44,60 @@ export default function RegisterPage() {
         return;
       }
 
-      // Auto sign in after registration
-      await signIn("credentials", {
-        email: data.email,
-        password: data.password,
+      // Email must be verified before signing in
+      toast.success("Account created! We've emailed you a verification code.");
+      setPendingCreds({ email: data.email, password: data.password });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyAndSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pendingCreds) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/verify-email/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: pendingCreds.email, otp }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        toast.error(json.error ?? "Verification failed");
+        return;
+      }
+      const result = await signIn("credentials", {
+        email: pendingCreds.email,
+        password: pendingCreds.password,
         redirect: false,
       });
-      toast.success("Account created! Welcome to HiranandaniProperties.");
+      if (result?.error) {
+        toast.success("Email verified! Please sign in.");
+        window.location.href = "/login";
+        return;
+      }
+      toast.success("Email verified! Welcome to HiranandaniProperties.");
       window.location.href = "/dashboard";
     } finally {
       setLoading(false);
+    }
+  };
+
+  const resendCode = async () => {
+    if (!pendingCreds) return;
+    setResending(true);
+    try {
+      const res = await fetch("/api/auth/verify-email/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: pendingCreds.email }),
+      });
+      const json = await res.json();
+      if (!res.ok) toast.error(json.error ?? "Could not resend the code");
+      else toast.success("A new code is on its way");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -59,6 +106,61 @@ export default function RegisterPage() {
     setGoogleLoading(true);
     await signIn("google", { callbackUrl: "/dashboard" });
   };
+
+  if (pendingCreds) {
+    return (
+      <div className="w-full max-w-md">
+        <div className="mb-8">
+          <h1 className="font-[family-name:var(--font-playfair)] text-3xl font-bold text-[#1A1A1A] mb-2">
+            Verify your email
+          </h1>
+          <p className="text-gray-500">
+            We sent a 6-digit code to <b className="text-[#1A1A1A]">{pendingCreds.email}</b>.
+            Enter it below to activate your account.
+          </p>
+        </div>
+
+        <form onSubmit={verifyAndSignIn} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="otp" className="text-[#1A1A1A] font-medium">6-digit code</Label>
+            <Input
+              id="otp"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              placeholder="••••••"
+              value={otp}
+              autoFocus
+              maxLength={6}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onPaste={(e) => {
+                e.preventDefault();
+                setOtp(e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6));
+              }}
+              className="bg-white border-gray-200 focus:border-[#1A1A1A] focus:ring-[#1A1A1A]/20 text-center text-2xl tracking-[0.5em] font-semibold py-6"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            disabled={loading || otp.length !== 6}
+            className="w-full bg-[#1A1A1A] hover:bg-[#1A1A1A]/90 text-white transition-all duration-300 py-5"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify & Continue"}
+          </Button>
+
+          <button
+            type="button"
+            onClick={resendCode}
+            disabled={resending}
+            className="w-full text-sm text-gray-500 hover:text-[#1A1A1A] disabled:opacity-50"
+          >
+            {resending ? "Sending…" : "Didn't get it? Resend code"}
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md">

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations/user";
+import { issueOtp } from "@/lib/otp";
+import { emailVerificationEmail } from "@/lib/email/templates";
+import { Resend } from "resend";
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,7 +41,24 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ ok: true }, { status: 201 });
+    // Credentials accounts must verify their email before signing in
+    try {
+      const issued = await issueOtp("verify", email.toLowerCase());
+      if ("otp" in issued) {
+        const { subject, html } = emailVerificationEmail({ name, otp: issued.otp });
+        await new Resend(process.env.RESEND_API_KEY!).emails.send({
+          from: "HiranandaniProperties <noreply@hiranandaniproperties.in>",
+          to: email,
+          subject,
+          html,
+        });
+      }
+    } catch (err) {
+      // User can request a fresh code from the verify screen
+      console.error("Verification email failed:", err);
+    }
+
+    return NextResponse.json({ ok: true, needsVerification: true }, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
