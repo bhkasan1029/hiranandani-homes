@@ -95,9 +95,6 @@ export default function Footer() {
           <p className="text-[10px] sm:text-xs text-white/25">
             Zero Brokerage
           </p>
-          <p className="text-[10px] sm:text-xs text-white/40">
-            Powered by <span className="font-semibold text-white/60">ByteLights</span>
-          </p>
         </div>
 
       </div>
